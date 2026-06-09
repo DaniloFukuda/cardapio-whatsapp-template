@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardápio - Sabor Brasileiro</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="cardapio">
+  <!-- HEADER -->
+  <header>
+    <div class="container">
+      <h1 id="header-restaurante">🍲 Sabor Brasileiro</h1>
+      <p id="header-slogan">Comida caseira, sabor de família</p>
+    </div>
+  </header>
+
+  <!-- NAVEGAÇÃO DE CATEGORIAS -->
+  <nav id="navegacao-categorias">
+    <ul id="lista-categorias">
+      <!-- Preenchida por JavaScript -->
+    </ul>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="container">
+    <!-- PRODUTOS POR CATEGORIA -->
+    <div id="conteudo-cardapio">
+      <!-- Preenchida por JavaScript -->
+    </div>
+
+    <!-- RESUMO DO CARRINHO -->
+    <section id="secao-carrinho" style="display: none; margin-top: var(--espacamento-xl);">
+      <h2 style="font-size: 1.5rem; color: var(--cor-principal); margin-bottom: var(--espacamento-lg);">
+        🛒 Seu Carrinho
+      </h2>
+
+      <div id="carrinho-vazio" class="caixa-vazia">
+        <div class="caixa-vazia-icone">🛒</div>
+        <h3>Carrinho Vazio</h3>
+        <p>Adicione produtos ao seu carrinho para continuar</p>
+      </div>
+
+      <div id="carrinho-itens" style="display: none;">
+        <table class="tabela-itens">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th style="text-align: center;">Qtd.</th>
+              <th style="text-align: right;">Preço Unit.</th>
+              <th style="text-align: right;">Subtotal</th>
+              <th style="text-align: center;">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-carrinho">
+            <!-- Preenchida por JavaScript -->
+          </tbody>
+        </table>
+
+        <div class="resumo-pedido">
+          <div class="resumo-linha">
+            <span>Subtotal:</span>
+            <span id="resumo-subtotal">R$ 0,00</span>
+          </div>
+          <div class="resumo-linha" id="linha-taxa" style="display: none;">
+            <span>Taxa de Entrega:</span>
+            <span id="resumo-taxa">R$ 0,00</span>
+          </div>
+          <div class="resumo-total">
+            <span>Total: </span>
+            <span id="resumo-total">R$ 0,00</span>
+          </div>
+        </div>
+
+        <a href="pedido.html" class="btn btn-bloco" style="background-color: var(--cor-sucesso); margin-bottom: var(--espacamento-md);">
+          Finalizar Pedido ✓
+        </a>
+        <button type="button" onclick="limparCarrinho()" class="btn-bloco" style="background-color: var(--cor-texto-claro);">
+          Limpar Carrinho
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- RODAPÉ -->
+  <footer>
+    <p>&copy; 2024 Cardápio Online - Todos os direitos reservados</p>
+  </footer>
+
+  <!-- CARRINHO FLUTUANTE -->
+  <div class="carrinho-flutuante">
+    <a href="#secao-carrinho" class="btn btn-carrinho" onclick="scrollParaCarrinho()">
+      🛒
+      <span id="carrinho-contador" style="display: none;">0</span>
+    </a>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="config/restaurante.js"></script>
+  <script src="data/cardapio.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/whatsapp.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- INICIALIZAÇÃO DO CARDÁPIO -->
+  <script>
+    /**
+     * Renderiza o cardápio
+     */
+    function renderizarCardapio() {
+      const containerCardapio = document.getElementById('conteudo-cardapio');
+      const navCategorias = document.getElementById('lista-categorias');
+      
+      containerCardapio.innerHTML = '';
+      navCategorias.innerHTML = '';
+
+      // Renderiza cada categoria
+      Cardapio.categorias.forEach((categoria, index) => {
+        // Adiciona link de navegação
+        const liNav = document.createElement('li');
+        const aNav = document.createElement('a');
+        aNav.href = `#categoria-${categoria.id}`;
+        aNav.textContent = categoria.nome;
+        aNav.className = index === 0 ? 'active' : '';
+        liNav.appendChild(aNav);
+        navCategorias.appendChild(liNav);
+
+        // Adiciona seção da categoria
+        const secao = document.createElement('section');
+        secao.className = 'secao-categoria';
+        secao.id = `categoria-${categoria.id}`;
+
+        const titulo = document.createElement('h2');
+        titulo.className = 'categoria-titulo';
+        titulo.textContent = categoria.nome;
+        secao.appendChild(titulo);
+
+        const descricao = document.createElement('p');
+        descricao.className = 'categoria-descricao';
+        descricao.textContent = categoria.descricao;
+        secao.appendChild(descricao);
+
+        // Grid de produtos
+        const grid = document.createElement('div');
+        grid.className = 'grid-produtos';
+
+        categoria.produtos.forEach(produto => {
+          const card = criarCardProduto(produto, categoria);
+          grid.appendChild(card);
+        });
+
+        secao.appendChild(grid);
+        containerCardapio.appendChild(secao);
+      });
+    }
+
+    /**
+     * Cria um card de produto
+     */
+    function criarCardProduto(produto, categoria) {
+      const card = document.createElement('div');
+      card.className = 'card-produto';
+
+      card.innerHTML = `
+        <div class="card-imagem">${produto.imagem || '🍽️'}</div>
+        <div class="card-conteudo">
+          <div class="card-nome">${produto.nome}</div>
+          <div class="card-descricao">${produto.descricao}</div>
+          <div class="card-preco">${App.formatarMoeda(produto.preco)}</div>
+          <button type="button" onclick="adicionarAoCarrinho('${produto.id}', '${categoria.nome}')">
+            Adicionar ao Carrinho
+          </button>
+        </div>
+      `;
+
+      return card;
+    }
+
+    /**
+     * Adiciona produto ao carrinho
+     */
+    function adicionarAoCarrinho(produtoId, categoriaNome) {
+      const produto = Cardapio.obterProduto(produtoId);
+      if (produto) {
+        carrinho.adicionar(produto);
+        atualizarCarrinho();
+        App.mostrarMensagem(`${produto.nome} adicionado ao carrinho!`, 'sucesso');
+      }
+    }
+
+    /**
+     * Atualiza a exibição do carrinho
+     */
+    function atualizarCarrinho() {
+      App.atualizarContador();
+      const items = carrinho.obterItems();
+      const secaoCarrinho = document.getElementById('secao-carrinho');
+      const carrinhoVazio = document.getElementById('carrinho-vazio');
+      const carrinhoItens = document.getElementById('carrinho-itens');
+      const tbodyCarrinho = document.getElementById('tbody-carrinho');
+
+      if (carrinho.estaVazio()) {
+        secaoCarrinho.style.display = 'block';
+        carrinhoVazio.style.display = 'block';
+        carrinhoItens.style.display = 'none';
+      } else {
+        secaoCarrinho.style.display = 'block';
+        carrinhoVazio.style.display = 'none';
+        carrinhoItens.style.display = 'block';
+
+        // Limpa tabela
+        tbodyCarrinho.innerHTML = '';
+
+        // Renderiza itens
+        items.forEach(item => {
+          const tr = document.createElement('tr');
+          const subtotal = item.preco * item.quantidade;
+
+          tr.innerHTML = `
+            <td>${item.nome}</td>
+            <td style="text-align: center;">
+              <div class="quantidade-controle">
+                <button type="button" onclick="diminuirQuantidade('${item.id}')" class="btn-pequeno">−</button>
+                <span>${item.quantidade}</span>
+                <button type="button" onclick="aumentarQuantidade('${item.id}')" class="btn-pequeno">+</button>
+              </div>
+            </td>
+            <td style="text-align: right;">${App.formatarMoeda(item.preco)}</td>
+            <td style="text-align: right;">${App.formatarMoeda(subtotal)}</td>
+            <td style="text-align: center;">
+              <button type="button" onclick="removerDoCarrinho('${item.id}')" class="btn-pequeno" style="background-color: var(--cor-erro);">
+                ✕
+              </button>
+            </td>
+          `;
+
+          tbodyCarrinho.appendChild(tr);
+        });
+      }
+
+      // Atualiza resumo
+      const subtotal = carrinho.obterValorTotal();
+      document.getElementById('resumo-subtotal').textContent = App.formatarMoeda(subtotal);
+      document.getElementById('resumo-total').textContent = App.formatarMoeda(subtotal);
+    }
+
+    /**
+     * Remove produto do carrinho
+     */
+    function removerDoCarrinho(produtoId) {
+      carrinho.remover(produtoId);
+      atualizarCarrinho();
+      App.mostrarMensagem('Produto removido do carrinho', 'info');
+    }
+
+    /**
+     * Aumenta quantidade
+     */
+    function aumentarQuantidade(produtoId) {
+      carrinho.aumentarQuantidade(produtoId);
+      atualizarCarrinho();
+    }
+
+    /**
+     * Diminui quantidade
+     */
+    function diminuirQuantidade(produtoId) {
+      carrinho.diminuirQuantidade(produtoId);
+      atualizarCarrinho();
+    }
+
+    /**
+     * Limpa o carrinho
+     */
+    function limparCarrinho() {
+      if (confirm('Tem certeza que deseja limpar o carrinho?')) {
+        carrinho.limpar();
+        atualizarCarrinho();
+        App.mostrarMensagem('Carrinho limpo', 'info');
+      }
+    }
+
+    /**
+     * Scroll para o carrinho
+     */
+    function scrollParaCarrinho() {
+      document.getElementById('secao-carrinho').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Inicializa quando o DOM está pronto
+    document.addEventListener('DOMContentLoaded', () => {
+      // Atualiza dados do restaurante
+      document.getElementById('header-restaurante').textContent = Restaurante.nome;
+      document.getElementById('header-slogan').textContent = Restaurante.slogan;
+
+      // Define cores
+      const root = document.documentElement;
+      root.style.setProperty('--cor-principal', Restaurante.cores.principal);
+      root.style.setProperty('--cor-secundaria', Restaurante.cores.secundaria);
+      root.style.setProperty('--cor-fundo', Restaurante.cores.fundo);
+      root.style.setProperty('--cor-texto', Restaurante.cores.texto);
+
+      // Renderiza cardápio
+      renderizarCardapio();
+
+      // Atualiza carrinho
+      atualizarCarrinho();
+    });
+  </script>
+</body>
+</html>
