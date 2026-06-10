@@ -3,386 +3,256 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finalizar Pedido - Sabor Brasileiro</title>
+  <meta name="theme-color" content="#E74C3C">
+  <title>Finalizar pedido</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="pedido">
-  <!-- HEADER -->
-  <header>
-    <div class="container">
-      <h1>✓ Finalizar Pedido</h1>
-      <p>Último passo antes de enviar para o WhatsApp</p>
+  <header class="checkout-header">
+    <div class="container checkout-header-inner">
+      <a href="cardapio.html" class="back-button" aria-label="Voltar ao cardápio">←</a>
+      <div>
+        <span class="small-label">Última etapa</span>
+        <h1>Finalizar pedido</h1>
+      </div>
+      <a data-whatsapp href="#" target="_blank" rel="noopener" class="header-help">Ajuda</a>
     </div>
   </header>
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <main class="container">
-    <!-- RESUMO DO PEDIDO -->
-    <section class="resumo-pedido" id="secao-resumo">
-      <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--cor-principal);">
-        Resumo de Sua Compra
-      </h2>
-
-      <table class="tabela-itens" id="tabela-resumo">
-        <thead>
-          <tr>
-            <th>Produto</th>
-            <th style="text-align: center;">Qtd.</th>
-            <th style="text-align: right;">Preço Unit.</th>
-            <th style="text-align: right;">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-resumo">
-          <!-- Preenchida por JavaScript -->
-        </tbody>
-      </table>
-
-      <div class="resumo-linha">
-        <strong>Subtotal:</strong>
-        <strong id="valor-subtotal">R$ 0,00</strong>
-      </div>
-
-      <div class="resumo-linha" id="linha-taxa-resumo" style="display: none;">
-        <strong>Taxa de Entrega:</strong>
-        <strong id="valor-taxa">R$ 0,00</strong>
-      </div>
-
-      <div class="resumo-total">
-        <strong>Total: <span id="valor-total">R$ 0,00</span></strong>
-      </div>
-
-      <div style="margin-top: var(--espacamento-md);">
-        <a href="cardapio.html" class="btn btn-pequeno" style="background-color: var(--cor-texto-claro);">
-          ← Voltar ao Cardápio
-        </a>
-      </div>
-    </section>
-
-    <!-- FORMULÁRIO DE PEDIDO -->
-    <form id="formulario-pedido" style="margin-top: var(--espacamento-lg);">
-      <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--cor-principal);">
-        Seus Dados
-      </h2>
-
-      <!-- SEÇÃO: DADOS DO CLIENTE -->
-      <fieldset style="border: none; padding: 0; margin-bottom: var(--espacamento-lg);">
-        <legend style="font-weight: 600; margin-bottom: var(--espacamento-md); color: var(--cor-texto);">
-          👤 Dados do Cliente
-        </legend>
-
-        <div class="form-grupo">
-          <label for="nome-cliente">Nome Completo *</label>
-          <input type="text" id="nome-cliente" name="nome" required 
-                 placeholder="Ex: João Silva">
+  <main class="container checkout-layout">
+    <div id="checkout-conteudo">
+      <section class="checkout-section order-summary">
+        <div class="checkout-section-title">
+          <span class="step-number">1</span>
+          <div><h2>Seu pedido</h2><p>Confira os itens antes de enviar.</p></div>
         </div>
-
-        <div class="form-grupo">
-          <label for="telefone-cliente">Telefone (WhatsApp)</label>
-          <input type="tel" id="telefone-cliente" name="telefone" 
-                 placeholder="Ex: (11) 98765-4321">
+        <div id="lista-resumo" class="checkout-items"></div>
+        <div class="checkout-totals">
+          <div><span>Subtotal</span><strong id="valor-subtotal">R$ 0,00</strong></div>
+          <div id="linha-taxa-resumo" hidden><span>Taxa de entrega</span><strong id="valor-taxa">R$ 0,00</strong></div>
+          <div class="checkout-total"><span>Total</span><strong id="valor-total">R$ 0,00</strong></div>
         </div>
-      </fieldset>
+        <a href="cardapio.html#secao-carrinho" class="edit-order-link">Editar pedido</a>
+      </section>
 
-      <!-- SEÇÃO: TIPO DE ENTREGA -->
-      <fieldset style="border: none; padding: 0; margin-bottom: var(--espacamento-lg);">
-        <legend style="font-weight: 600; margin-bottom: var(--espacamento-md); color: var(--cor-texto);">
-          🚚 Tipo de Entrega
-        </legend>
+      <form id="formulario-pedido" class="checkout-form">
+        <section class="checkout-section">
+          <div class="checkout-section-title">
+            <span class="step-number">2</span>
+            <div><h2>Seus dados</h2><p>Como podemos identificar o pedido?</p></div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="nome-cliente">Nome completo *</label>
+              <input type="text" id="nome-cliente" name="nome" required autocomplete="name" placeholder="Digite seu nome">
+            </div>
+            <div class="form-group">
+              <label for="telefone-cliente">Telefone</label>
+              <input type="tel" id="telefone-cliente" name="telefone" autocomplete="tel" placeholder="(11) 99999-9999">
+            </div>
+          </div>
+        </section>
 
-        <div class="form-grupo">
-          <label style="display: flex; align-items: center; margin-bottom: var(--espacamento-md); cursor: pointer;">
-            <input type="radio" name="tipo-entrega" value="retirada" required 
-                   onchange="atualizarTipoEntrega()">
-            <span style="margin-left: var(--espacamento-sm);">Retirada no Local</span>
-          </label>
-          <label style="display: flex; align-items: center; cursor: pointer;">
-            <input type="radio" name="tipo-entrega" value="entrega" 
-                   onchange="atualizarTipoEntrega()" id="opcao-entrega">
-            <span style="margin-left: var(--espacamento-sm);">Entrega (+ R$ <span id="valor-taxa-opcao">5,00</span>)</span>
-          </label>
+        <section class="checkout-section">
+          <div class="checkout-section-title">
+            <span class="step-number">3</span>
+            <div><h2>Entrega ou retirada</h2><p>Escolha como deseja receber.</p></div>
+          </div>
+          <div class="choice-grid" id="opcoes-entrega">
+            <label class="choice-card" id="opcao-retirada">
+              <input type="radio" name="tipo-entrega" value="retirada" required>
+              <span class="choice-icon">⌂</span>
+              <span><strong>Retirada</strong><small>Buscar no restaurante</small></span>
+              <span class="radio-indicator"></span>
+            </label>
+            <label class="choice-card" id="opcao-entrega">
+              <input type="radio" name="tipo-entrega" value="entrega">
+              <span class="choice-icon">⌖</span>
+              <span><strong>Entrega</strong><small>Taxa de <b id="valor-taxa-opcao">R$ 0,00</b></small></span>
+              <span class="radio-indicator"></span>
+            </label>
+          </div>
+          <div class="form-group expandable-field" id="grupo-endereco" hidden>
+            <label for="endereco-entrega">Endereço completo *</label>
+            <input type="text" id="endereco-entrega" name="endereco" autocomplete="street-address" placeholder="Rua, número, bairro e complemento">
+          </div>
+        </section>
+
+        <section class="checkout-section">
+          <div class="checkout-section-title">
+            <span class="step-number">4</span>
+            <div><h2>Pagamento</h2><p>Selecione a forma de pagamento.</p></div>
+          </div>
+          <div class="choice-grid payment-grid">
+            <label class="choice-card">
+              <input type="radio" name="pagamento" value="pix" required>
+              <span class="choice-icon">◇</span>
+              <span><strong>Pix</strong><small>Pagamento rápido</small></span>
+              <span class="radio-indicator"></span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="pagamento" value="dinheiro">
+              <span class="choice-icon">R$</span>
+              <span><strong>Dinheiro</strong><small>Informe o troco</small></span>
+              <span class="radio-indicator"></span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="pagamento" value="cartao">
+              <span class="choice-icon">▣</span>
+              <span><strong>Cartão</strong><small>Crédito ou débito</small></span>
+              <span class="radio-indicator"></span>
+            </label>
+          </div>
+          <div class="form-group expandable-field" id="grupo-troco" hidden>
+            <label for="troco">Precisa de troco para quanto?</label>
+            <input type="number" id="troco" name="troco" inputmode="decimal" step="0.01" min="0" placeholder="Ex.: 100,00">
+          </div>
+        </section>
+
+        <section class="checkout-section">
+          <div class="checkout-section-title">
+            <span class="step-number">5</span>
+            <div><h2>Observações</h2><p>Algum detalhe para preparar seu pedido?</p></div>
+          </div>
+          <div class="form-group">
+            <label for="observacoes" class="sr-only">Observações do pedido</label>
+            <textarea id="observacoes" name="observacoes" maxlength="300" placeholder="Ex.: retirar cebola, enviar molho separado..."></textarea>
+            <small class="field-hint">Até 300 caracteres</small>
+          </div>
+        </section>
+
+        <div class="checkout-submit">
+          <div><small>Total do pedido</small><strong id="valor-total-fixo">R$ 0,00</strong></div>
+          <button type="submit" class="btn btn-whatsapp">Enviar pedido pelo WhatsApp</button>
         </div>
-
-        <div class="form-grupo" id="grupo-endereco" style="display: none;">
-          <label for="endereco-entrega">Endereço de Entrega *</label>
-          <input type="text" id="endereco-entrega" name="endereco" 
-                 placeholder="Ex: Rua das Flores, 123 - Apto 45">
-        </div>
-      </fieldset>
-
-      <!-- SEÇÃO: PAGAMENTO -->
-      <fieldset style="border: none; padding: 0; margin-bottom: var(--espacamento-lg);">
-        <legend style="font-weight: 600; margin-bottom: var(--espacamento-md); color: var(--cor-texto);">
-          💳 Forma de Pagamento
-        </legend>
-
-        <div class="form-grupo">
-          <label style="display: flex; align-items: center; margin-bottom: var(--espacamento-md); cursor: pointer;">
-            <input type="radio" name="pagamento" value="pix" required 
-                   onchange="atualizarPagamento()">
-            <span style="margin-left: var(--espacamento-sm);">Pix</span>
-          </label>
-          <label style="display: flex; align-items: center; margin-bottom: var(--espacamento-md); cursor: pointer;">
-            <input type="radio" name="pagamento" value="dinheiro" 
-                   onchange="atualizarPagamento()">
-            <span style="margin-left: var(--espacamento-sm);">Dinheiro</span>
-          </label>
-          <label style="display: flex; align-items: center; cursor: pointer;">
-            <input type="radio" name="pagamento" value="cartao" 
-                   onchange="atualizarPagamento()">
-            <span style="margin-left: var(--espacamento-sm);">Cartão</span>
-          </label>
-        </div>
-
-        <div class="form-grupo" id="grupo-troco" style="display: none;">
-          <label for="troco">Troco para (em reais) *</label>
-          <input type="number" id="troco" name="troco" step="0.01" min="0" 
-                 placeholder="Ex: 100.00">
-        </div>
-      </fieldset>
-
-      <!-- SEÇÃO: OBSERVAÇÕES -->
-      <fieldset style="border: none; padding: 0; margin-bottom: var(--espacamento-lg);">
-        <legend style="font-weight: 600; margin-bottom: var(--espacamento-md); color: var(--cor-texto);">
-          📝 Observações
-        </legend>
-
-        <div class="form-grupo">
-          <label for="observacoes">Observações e Preferências</label>
-          <textarea id="observacoes" name="observacoes" 
-                    placeholder="Ex: Sem cebola, extra molho, etc."></textarea>
-        </div>
-      </fieldset>
-
-      <!-- BOTÕES -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--espacamento-md); margin-top: var(--espacamento-lg);">
-        <a href="cardapio.html" class="btn" style="background-color: var(--cor-texto-claro); text-align: center;">
-          Cancelar
-        </a>
-        <button type="submit" class="btn" style="background-color: var(--cor-sucesso);">
-          Enviar para WhatsApp ✓
-        </button>
-      </div>
-    </form>
-
-    <!-- MENSAGEM CARREIRA VAZIA -->
-    <div id="carrinho-vazio-info" style="display: none;">
-      <div class="caixa-vazia">
-        <div class="caixa-vazia-icone">🛒</div>
-        <h3>Carrinho Vazio</h3>
-        <p style="margin-bottom: var(--espacamento-md);">
-          Adicione produtos ao seu carrinho para fazer um pedido
-        </p>
-        <a href="cardapio.html" class="btn">
-          Voltar ao Cardápio
-        </a>
-      </div>
+      </form>
     </div>
+
+    <section id="carrinho-vazio-info" class="empty-state" hidden>
+      <span class="empty-icon">＋</span>
+      <h2>Seu pedido está vazio</h2>
+      <p>Escolha alguns produtos para continuar.</p>
+      <a href="cardapio.html" class="btn btn-primary">Ver cardápio</a>
+    </section>
   </main>
 
-  <!-- RODAPÉ -->
-  <footer>
-    <p>&copy; 2024 Cardápio Online - Todos os direitos reservados</p>
-  </footer>
-
-  <!-- SCRIPTS -->
   <script src="config/restaurante.js"></script>
   <script src="data/cardapio.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/whatsapp.js"></script>
   <script src="js/app.js"></script>
-
-  <!-- INICIALIZAÇÃO DO PEDIDO -->
   <script>
-    /**
-     * Inicializa a página de pedido
-     */
-    function inicializarPedido() {
-      const items = carrinho.obterItems();
-
-      if (carrinho.estaVazio()) {
-        // Mostra aviso de carrinho vazio
-        document.getElementById('secao-resumo').style.display = 'none';
-        document.getElementById('formulario-pedido').style.display = 'none';
-        document.getElementById('carrinho-vazio-info').style.display = 'block';
-        return;
-      }
-
-      // Renderiza resumo
-      renderizarResumo();
-
-      // Atualiza valor da taxa de entrega
-      document.getElementById('valor-taxa-opcao').textContent = 
-        Restaurante.taxaEntregaPadrao.toFixed(2).replace('.', ',');
-
-      // Controla exibição de endereço e troco
-      const formTipoEntrega = document.querySelector('input[name="tipo-entrega"]');
-      const formPagamento = document.querySelector('input[name="pagamento"]');
-
-      formTipoEntrega.addEventListener('change', atualizarTipoEntrega);
-      formPagamento.addEventListener('change', atualizarPagamento);
-
-      // Listener do formulário
-      document.getElementById('formulario-pedido').addEventListener('submit', enviarPedido);
-    }
-
-    /**
-     * Renderiza o resumo do pedido
-     */
     function renderizarResumo() {
-      const items = carrinho.obterItems();
-      const tbody = document.getElementById('tbody-resumo');
-      tbody.innerHTML = '';
+      const lista = document.getElementById('lista-resumo');
+      lista.replaceChildren();
 
-      let subtotal = 0;
-      items.forEach(item => {
-        const valorItem = item.preco * item.quantidade;
-        subtotal += valorItem;
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.nome}</td>
-          <td style="text-align: center;">${item.quantidade}</td>
-          <td style="text-align: right;">${App.formatarMoeda(item.preco)}</td>
-          <td style="text-align: right;">${App.formatarMoeda(valorItem)}</td>
-        `;
-        tbody.appendChild(tr);
+      carrinho.obterItems().forEach(item => {
+        const linha = document.createElement('article');
+        linha.className = 'checkout-item';
+        const media = document.createElement('div');
+        media.className = 'checkout-item-media';
+        App.renderizarMidia(media, item.imagem, item.nome);
+        const info = document.createElement('div');
+        info.innerHTML = `<strong>${item.quantidade}x ${item.nome}</strong><small>${App.formatarMoeda(item.preco)} cada</small>`;
+        const valor = document.createElement('strong');
+        valor.textContent = App.formatarMoeda(item.preco * item.quantidade);
+        linha.append(media, info, valor);
+        lista.appendChild(linha);
       });
 
-      document.getElementById('valor-subtotal').textContent = App.formatarMoeda(subtotal);
-    }
-
-    /**
-     * Atualiza ao trocar tipo de entrega
-     */
-    function atualizarTipoEntrega() {
-      const tipoEntrega = document.querySelector('input[name="tipo-entrega"]:checked')?.value;
-      const grupoEndereco = document.getElementById('grupo-endereco');
-      const inputEndereco = document.getElementById('endereco-entrega');
-
-      if (tipoEntrega === 'entrega') {
-        grupoEndereco.style.display = 'block';
-        inputEndereco.required = true;
-      } else {
-        grupoEndereco.style.display = 'none';
-        inputEndereco.required = false;
-      }
-
+      document.getElementById('valor-subtotal').textContent = App.formatarMoeda(carrinho.obterValorTotal());
       atualizarResumo();
     }
 
-    /**
-     * Atualiza ao trocar forma de pagamento
-     */
+    function atualizarTipoEntrega() {
+      const tipo = document.querySelector('input[name="tipo-entrega"]:checked')?.value;
+      const grupo = document.getElementById('grupo-endereco');
+      const endereco = document.getElementById('endereco-entrega');
+      grupo.hidden = tipo !== 'entrega';
+      endereco.required = tipo === 'entrega';
+      atualizarResumo();
+    }
+
     function atualizarPagamento() {
       const pagamento = document.querySelector('input[name="pagamento"]:checked')?.value;
-      const grupoTroco = document.getElementById('grupo-troco');
-      const inputTroco = document.getElementById('troco');
-
-      if (pagamento === 'dinheiro') {
-        grupoTroco.style.display = 'block';
-        inputTroco.required = true;
-      } else {
-        grupoTroco.style.display = 'none';
-        inputTroco.required = false;
-      }
+      const grupo = document.getElementById('grupo-troco');
+      grupo.hidden = pagamento !== 'dinheiro';
     }
 
-    /**
-     * Atualiza o resumo com taxa de entrega
-     */
     function atualizarResumo() {
-      const tipoEntrega = document.querySelector('input[name="tipo-entrega"]:checked')?.value;
+      const entrega = document.querySelector('input[name="tipo-entrega"]:checked')?.value === 'entrega';
       const subtotal = carrinho.obterValorTotal();
-      const linhaSetaTaxa = document.getElementById('linha-taxa-resumo');
-      const valorTaxa = document.getElementById('valor-taxa');
+      const taxa = entrega ? Restaurante.taxaEntregaPadrao : 0;
+      const total = subtotal + taxa;
 
-      let total = subtotal;
-
-      if (tipoEntrega === 'entrega') {
-        linhaSetaTaxa.style.display = 'block';
-        valorTaxa.textContent = App.formatarMoeda(Restaurante.taxaEntregaPadrao);
-        total += Restaurante.taxaEntregaPadrao;
-      } else {
-        linhaSetaTaxa.style.display = 'none';
-      }
-
+      document.getElementById('linha-taxa-resumo').hidden = !entrega;
+      document.getElementById('valor-taxa').textContent = App.formatarMoeda(taxa);
       document.getElementById('valor-total').textContent = App.formatarMoeda(total);
+      document.getElementById('valor-total-fixo').textContent = App.formatarMoeda(total);
     }
 
-    /**
-     * Envia o pedido para o WhatsApp
-     */
-    function enviarPedido(e) {
-      e.preventDefault();
-
-      const nomeCliente = document.getElementById('nome-cliente').value;
-      const telefoneCliente = document.getElementById('telefone-cliente').value;
-      const tipoEntrega = document.querySelector('input[name="tipo-entrega"]:checked').value;
-      const endereco = document.getElementById('endereco-entrega').value;
-      const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
-      const troco = document.getElementById('troco').value ? parseFloat(document.getElementById('troco').value) : null;
-      const observacoes = document.getElementById('observacoes').value;
-
-      const items = carrinho.obterItems();
+    function enviarPedido(event) {
+      event.preventDefault();
+      const tipoEntrega = document.querySelector('input[name="tipo-entrega"]:checked')?.value;
+      const pagamento = document.querySelector('input[name="pagamento"]:checked')?.value;
       const subtotal = carrinho.obterValorTotal();
-      let taxa = 0;
-      let total = subtotal;
+      const taxa = tipoEntrega === 'entrega' ? Restaurante.taxaEntregaPadrao : 0;
+      const trocoInformado = document.getElementById('troco').value;
 
-      if (tipoEntrega === 'entrega') {
-        taxa = Restaurante.taxaEntregaPadrao;
-        total += taxa;
-      }
-
-      // Monta dados do pedido
       const dadosPedido = {
-        nomeCliente,
-        telefoneCliente,
-        items,
+        nomeCliente: document.getElementById('nome-cliente').value,
+        telefoneCliente: document.getElementById('telefone-cliente').value,
+        items: carrinho.obterItems(),
         tipoPedido: tipoEntrega,
-        endereco,
+        endereco: document.getElementById('endereco-entrega').value,
         pagamento,
-        troco,
-        observacoes,
+        troco: trocoInformado ? parseFloat(trocoInformado) : null,
+        observacoes: document.getElementById('observacoes').value,
         taxa,
-        total
+        total: subtotal + taxa
       };
 
-      // Valida
       const validacao = WhatsAppIntegration.validarDados(dadosPedido);
       if (!validacao.valido) {
         App.mostrarMensagem(validacao.erro, 'erro');
         return;
       }
 
-      // Envia
       WhatsAppIntegration.enviarPedido(dadosPedido);
-
-      // Limpa o carrinho após enviar
       carrinho.limpar();
-      App.mostrarMensagem('Pedido enviado! Você será redirecionado em breve.', 'sucesso');
-
-      // Redireciona para home após 2 segundos
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 2000);
+      App.mostrarMensagem('Pedido preparado e aberto no WhatsApp.', 'sucesso');
+      setTimeout(() => { window.location.href = 'index.html'; }, 2000);
     }
 
-    // Inicializa quando o DOM está pronto
+    function configurarModalidades() {
+      const retirada = document.getElementById('opcao-retirada');
+      const entrega = document.getElementById('opcao-entrega');
+      retirada.hidden = !Restaurante.aceitaRetirada;
+      entrega.hidden = !Restaurante.aceitaEntrega;
+
+      const valorInicial = Restaurante.aceitaRetirada ? 'retirada' : 'entrega';
+      const opcaoInicial = document.querySelector(`input[name="tipo-entrega"][value="${valorInicial}"]`);
+      if (opcaoInicial) opcaoInicial.checked = true;
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-      // Define cores
-      const root = document.documentElement;
-      root.style.setProperty('--cor-principal', Restaurante.cores.principal);
-      root.style.setProperty('--cor-secundaria', Restaurante.cores.secundaria);
-      root.style.setProperty('--cor-fundo', Restaurante.cores.fundo);
-      root.style.setProperty('--cor-texto', Restaurante.cores.texto);
+      document.title = `Finalizar pedido - ${Restaurante.nome}`;
+      if (carrinho.estaVazio()) {
+        document.getElementById('checkout-conteudo').hidden = true;
+        document.getElementById('carrinho-vazio-info').hidden = false;
+        return;
+      }
 
-      // Inicializa
-      inicializarPedido();
-
-      // Seleciona retirada por padrão
-      document.querySelector('input[name="tipo-entrega"][value="retirada"]').checked = true;
+      configurarModalidades();
+      document.querySelector('input[name="pagamento"][value="pix"]').checked = true;
+      document.getElementById('valor-taxa-opcao').textContent = App.formatarMoeda(Restaurante.taxaEntregaPadrao);
+      document.querySelectorAll('input[name="tipo-entrega"]').forEach(input => input.addEventListener('change', atualizarTipoEntrega));
+      document.querySelectorAll('input[name="pagamento"]').forEach(input => input.addEventListener('change', atualizarPagamento));
+      document.getElementById('formulario-pedido').addEventListener('submit', enviarPedido);
+      renderizarResumo();
       atualizarTipoEntrega();
-      atualizarResumo();
+      atualizarPagamento();
     });
   </script>
 </body>

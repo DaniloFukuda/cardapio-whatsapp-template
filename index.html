@@ -3,145 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardápio - Sabor Brasileiro</title>
+  <meta name="theme-color" content="#E74C3C">
+  <title>Cardápio Digital</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="index">
-  <!-- HEADER -->
-  <header>
-    <div class="container">
-      <h1>🍲 Cardápio Online</h1>
-      <p>Peça aqui pelo WhatsApp</p>
+  <header class="app-header">
+    <div class="container header-top">
+      <div class="restaurante-logo">
+        <div class="logo-badge" id="header-logo" aria-hidden="true">🍲</div>
+        <div class="restaurante-info">
+          <span class="small-label">Cardápio digital</span>
+          <h1 id="restaurante-nome">Restaurante</h1>
+          <div class="status-line">
+            <span class="status-chip" id="status-aberto">Aberto agora</span>
+            <span id="restaurante-horario">Consulte o horário</span>
+          </div>
+        </div>
+      </div>
+      <a data-whatsapp href="#" target="_blank" rel="noopener" class="contact-button" aria-label="Falar com o restaurante no WhatsApp">
+        <span class="contact-icon">☎</span>
+        <span>Contato</span>
+      </a>
     </div>
   </header>
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <main class="container">
-    <!-- SEÇÃO HERO -->
-    <section class="hero">
-      <h2 id="restaurante-nome">Sabor Brasileiro</h2>
-      <p id="restaurante-slogan">Comida caseira, sabor de família</p>
-      <a href="cardapio.html" class="btn btn-bloco">
-        Ver Cardápio
-      </a>
-    </section>
-
-    <!-- INFORMAÇÕES DO RESTAURANTE -->
-    <section class="info-restaurante">
-      <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--cor-principal);">
-        Informações
-      </h2>
-
-      <div class="info-item">
-        <div class="info-titulo">📍 Endereço</div>
-        <div class="info-descricao" id="restaurante-endereco">
-          Rua das Flores, 123 - São Paulo, SP
-        </div>
-      </div>
-
-      <div class="info-item">
-        <div class="info-titulo">🕐 Horário</div>
-        <div class="info-descricao" id="restaurante-horario">
-          Seg-Dom: 11h às 22h
-        </div>
-      </div>
-
-      <div class="info-item">
-        <div class="info-titulo">📱 Contato</div>
-        <div class="info-descricao">
-          <a href="https://wa.me/5511987654321" target="_blank" style="color: var(--cor-principal); font-weight: 600;">
-            Enviar mensagem no WhatsApp
-          </a>
-        </div>
-      </div>
-
-      <div class="info-item">
-        <div class="info-titulo">📦 Formas de Entrega</div>
-        <div class="info-descricao">
-          <span id="info-entrega" style="display: none; margin-right: 1rem;">✓ Entrega</span>
-          <span id="info-retirada" style="display: none;">✓ Retirada no local</span>
-        </div>
-      </div>
-
-      <div class="info-item">
-        <div class="info-titulo">🚚 Taxa de Entrega</div>
-        <div class="info-descricao" id="restaurante-taxa">
-          R$ 5,00 (padrão)
-        </div>
+  <main>
+    <section class="home-hero" id="home-hero">
+      <div class="container hero-content">
+        <span class="hero-eyebrow">Peça direto pelo WhatsApp</span>
+        <h2 id="banner-titulo">Comida de verdade, feita para o seu dia</h2>
+        <p id="banner-texto">Escolha seus favoritos e envie o pedido pronto pelo WhatsApp.</p>
+        <a href="cardapio.html" class="btn btn-primary btn-hero">Ver cardápio <span>→</span></a>
       </div>
     </section>
 
-    <!-- CHAMADA PARA AÇÃO -->
-    <section style="text-align: center; padding: var(--espacamento-xl) 0;">
-      <h3 style="margin-bottom: var(--espacamento-md); color: var(--cor-texto);">
-        Pronto para fazer seu pedido?
-      </h3>
-      <a href="cardapio.html" class="btn btn-bloco" style="max-width: 300px; margin: 0 auto;">
-        Abrir Cardápio 🍽️
-      </a>
+    <section class="container home-panel" aria-label="Informações do restaurante">
+      <div class="service-summary">
+        <article class="service-item">
+          <span class="service-icon">◷</span>
+          <div><small>Tempo estimado</small><strong id="tempo-entrega">35-50 min</strong></div>
+        </article>
+        <article class="service-item">
+          <span class="service-icon">⌂</span>
+          <div><small>Entrega e retirada</small><strong id="modalidades">Disponíveis</strong></div>
+        </article>
+        <article class="service-item">
+          <span class="service-icon">R$</span>
+          <div><small>Pedido mínimo</small><strong id="pedido-minimo">R$ 0,00</strong></div>
+        </article>
+      </div>
+
+      <div class="home-info-grid">
+        <article class="info-card">
+          <span class="info-icon">⌖</span>
+          <div>
+            <small>Onde estamos</small>
+            <h3>Endereço</h3>
+            <p id="restaurante-endereco"></p>
+          </div>
+        </article>
+        <article class="info-card">
+          <span class="info-icon">◷</span>
+          <div>
+            <small>Funcionamento</small>
+            <h3>Horário de atendimento</h3>
+            <p id="restaurante-horario-detalhe"></p>
+          </div>
+        </article>
+      </div>
     </section>
   </main>
 
-  <!-- RODAPÉ -->
   <footer>
-    <p>&copy; 2024 Cardápio Online - Todos os direitos reservados</p>
-    <p style="margin-top: 0.5rem; font-size: 0.9rem;">
-      <a href="https://instagram.com/sabor.brasileiro" target="_blank" id="footer-instagram">
-        Siga nosso Instagram
-      </a>
-    </p>
+    <strong id="footer-restaurante">Restaurante</strong>
+    <a href="#" id="footer-instagram"></a>
   </footer>
 
-  <!-- CARRINHO FLUTUANTE -->
-  <div class="carrinho-flutuante">
-    <a href="cardapio.html#carrinho" class="btn btn-carrinho">
-      🛒
-      <span id="carrinho-contador" style="display: none;">0</span>
-    </a>
-  </div>
-
-  <!-- SCRIPTS -->
   <script src="config/restaurante.js"></script>
   <script src="data/cardapio.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/whatsapp.js"></script>
   <script src="js/app.js"></script>
-
-  <!-- INICIALIZAR DADOS DO RESTAURANTE -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Preenche dados do restaurante
-      document.getElementById('restaurante-nome').textContent = Restaurante.nome;
-      document.getElementById('restaurante-slogan').textContent = Restaurante.slogan;
+      document.title = `Cardápio - ${Restaurante.nome}`;
+      document.getElementById('banner-titulo').textContent = Restaurante.bannerTitulo || Restaurante.slogan;
+      document.getElementById('banner-texto').textContent = Restaurante.bannerTexto || Restaurante.slogan;
+      document.getElementById('tempo-entrega').textContent = Restaurante.tempoEntrega || 'Consulte';
+      document.getElementById('pedido-minimo').textContent = App.formatarMoeda(Restaurante.pedidoMinimo || 0);
       document.getElementById('restaurante-endereco').textContent = Restaurante.endereco;
-      document.getElementById('restaurante-horario').textContent = Restaurante.horario;
-      document.getElementById('restaurante-taxa').textContent = 
-        `R$ ${Restaurante.taxaEntregaPadrao.toFixed(2).replace('.', ',')}`;
+      document.getElementById('restaurante-horario-detalhe').textContent = Restaurante.horario;
+      document.getElementById('footer-restaurante').textContent = Restaurante.nome;
 
-      // Mostra opções de entrega/retirada
-      if (Restaurante.aceitaEntrega) {
-        document.getElementById('info-entrega').style.display = 'inline';
-      }
-      if (Restaurante.aceitaRetirada) {
-        document.getElementById('info-retirada').style.display = 'inline';
-      }
+      const modalidades = [];
+      if (Restaurante.aceitaEntrega) modalidades.push('Entrega');
+      if (Restaurante.aceitaRetirada) modalidades.push('Retirada');
+      document.getElementById('modalidades').textContent = modalidades.join(' e ') || 'Consulte';
 
-      // Instagram
-      const footerInsta = document.getElementById('footer-instagram');
+      const instagram = document.getElementById('footer-instagram');
       if (Restaurante.instagram) {
-        footerInsta.textContent = Restaurante.instagram;
-        footerInsta.href = `https://instagram.com/${Restaurante.instagram.replace('@', '')}`;
+        instagram.textContent = Restaurante.instagram;
+        instagram.href = `https://instagram.com/${Restaurante.instagram.replace('@', '')}`;
+        instagram.target = '_blank';
+        instagram.rel = 'noopener';
+      } else {
+        instagram.remove();
       }
 
-      // Atualiza contador do carrinho
-      App.atualizarContador();
-
-      // Define cores do site
-      const root = document.documentElement;
-      root.style.setProperty('--cor-principal', Restaurante.cores.principal);
-      root.style.setProperty('--cor-secundaria', Restaurante.cores.secundaria);
-      root.style.setProperty('--cor-fundo', Restaurante.cores.fundo);
-      root.style.setProperty('--cor-texto', Restaurante.cores.texto);
+      const hero = document.getElementById('home-hero');
+      if (Restaurante.bannerImagem) {
+        hero.style.setProperty('--banner-image', `url("${Restaurante.bannerImagem}")`);
+        hero.classList.add('has-image');
+      }
     });
   </script>
 </body>

@@ -1,222 +1,116 @@
-# 🍲 Cardápio WhatsApp Template
+# Cardápio WhatsApp Template
 
-Um template genérico e responsivo de cardápio online para restaurantes. O cliente acessa pelo Instagram, monta o pedido e envia tudo pronto pelo WhatsApp!
+Template genérico de cardápio digital com visual mobile de app de delivery. O cliente escolhe os produtos, monta o pedido e envia uma mensagem pronta para o WhatsApp do restaurante.
 
-## ✨ Características
+## Recursos
 
-- ✅ **Sem backend** - Funciona 100% no navegador
-- ✅ **Sem React** - HTML, CSS e JavaScript puro
-- ✅ **Mobile First** - Totalmente responsivo
-- ✅ **LocalStorage** - Carrinho persistente
-- ✅ **Inteligente** - Mensagem formatada para WhatsApp
-- ✅ **Personalizável** - Fácil trocar nome, logo e produtos
-- ✅ **Pronto para Production** - Design profissional
+- HTML, CSS e JavaScript puro
+- Sem backend e sem bibliotecas externas
+- Interface mobile-first inspirada em aplicativos de delivery
+- Cabeçalho com logo, status, horário e contato
+- Banner personalizável
+- Categorias em navegação horizontal sticky
+- Produtos com imagem ou placeholder, descrição, preço e botão de adição
+- Seção configurável de produtos mais pedidos
+- Carrinho persistido em `localStorage`
+- Barra inferior do carrinho com quantidade e total
+- Checkout com entrega/retirada, pagamento e observações
+- Geração do link `wa.me` com o pedido formatado
 
-## 🚀 Como Usar
+## Executar localmente
 
-### 1. Abrir Localmente
-
-1. Faça o download ou clone este repositório
-2. Abra o arquivo `index.html` no navegador
-3. Pronto! O site está funcionando
+Na pasta do projeto:
 
 ```bash
-# Ou use um servidor local simples
 python -m http.server 8000
-# Depois acesse: http://localhost:8000
 ```
 
-### 2. Personalizar o Restaurante
+Acesse `http://localhost:8000`.
 
-Edite o arquivo `config/restaurante.js`:
+## Personalizar o restaurante
+
+Edite [`config/restaurante.js`](config/restaurante.js):
 
 ```javascript
 const Restaurante = {
   nome: 'Seu Restaurante',
-  slogan: 'Seu slogan aqui',
-  whatsapp: '5511999999999', // Número com DDD, sem formatação
-  instagram: '@seu.instagram',
-  endereco: 'Rua...',
+  slogan: 'Seu slogan',
+  whatsapp: '5511999999999',
+  instagram: '@seu.restaurante',
+  endereco: 'Rua Exemplo, 123',
   horario: 'Seg-Dom: 11h às 22h',
+  statusAberto: 'Aberto agora',
+  tempoEntrega: '35-50 min',
+  pedidoMinimo: 15.00,
+
   taxaEntregaPadrao: 5.00,
   aceitaEntrega: true,
   aceitaRetirada: true,
+
+  logo: '🍲',
+  bannerImagem: '',
+  bannerTitulo: 'Comida de verdade, feita para o seu dia',
+  bannerTexto: 'Escolha seus favoritos e envie o pedido pelo WhatsApp.',
+  produtosDestaque: ['produto-1', 'produto-2'],
+
   cores: {
-    principal: '#E74C3C',    // Vermelho principal
-    secundaria: '#F39C12',   // Laranja
-    fundo: '#FFF8F3',        // Bege claro
-    texto: '#2C3E50'         // Texto escuro
+    principal: '#E74C3C',
+    secundaria: '#F39C12',
+    fundo: '#FFF8F3',
+    texto: '#2C3E50'
   }
 };
 ```
 
-### 3. Adicionar/Editar Produtos
+`logo`, `bannerImagem` e a propriedade `imagem` dos produtos aceitam URL, caminho local como `assets/foto.jpg` ou emoji. Se uma imagem não carregar, o template exibe um placeholder.
 
-Edite o arquivo `data/cardapio.js`:
+## Personalizar o cardápio
 
-```javascript
-const Cardapio = {
-  categorias: [
-    {
-      id: 'marmitas',
-      nome: 'Marmitas',
-      descricao: 'Descrição da categoria',
-      produtos: [
-        {
-          id: 'produto-1',
-          nome: 'Nome do Produto',
-          descricao: 'Descrição breve',
-          preco: 25.00,
-          imagem: '🍚' // Pode ser emoji ou URL
-        }
-        // ... mais produtos
-      ]
-    }
-    // ... mais categorias
-  ]
-};
-```
-
-### 4. Publicar na Internet
-
-#### Opção A: GitHub Pages (Grátis)
-
-```bash
-# 1. Crie um repositório no GitHub
-# 2. Faça upload dos arquivos
-# 3. Vá em Settings > Pages
-# 4. Selecione "Deploy from a branch"
-# 5. Escolha "main" branch
-# 6. Seu site estará em: https://seu-usuario.github.io/cardapio-whatsapp-template
-```
-
-#### Opção B: Netlify (Grátis)
-
-```bash
-# 1. Acesse netlify.com
-# 2. Clique em "New site from Git"
-# 3. Conecte seu repositório GitHub
-# 4. Deploy automático a cada push!
-```
-
-#### Opção C: Vercel (Grátis)
-
-```bash
-# Similar ao Netlify, acesse vercel.com
-```
-
-## 📁 Estrutura do Projeto
-
-```
-cardapio-whatsapp-template/
-├── index.html              # Página inicial
-├── cardapio.html           # Página do cardápio
-├── pedido.html             # Página de checkout
-│
-├── config/
-│   └── restaurante.js      # Configurações do restaurante 🔧
-│
-├── data/
-│   └── cardapio.js         # Produtos e categorias 🔧
-│
-├── css/
-│   └── style.css           # Estilos
-│
-├── js/
-│   ├── app.js              # Lógica principal
-│   ├── cart.js             # Gerenciador de carrinho
-│   └── whatsapp.js         # Integração WhatsApp
-│
-├── assets/                 # Imagens, logos, etc
-│
-└── README.md               # Este arquivo
-```
-
-## 🔄 Fluxo do Usuário
-
-1. **Página Inicial** (`index.html`) - Informações do restaurante
-2. **Cardápio** (`cardapio.html`) - Escolhe produtos e adiciona ao carrinho
-3. **Checkout** (`pedido.html`) - Preenche dados e confirma o pedido
-4. **WhatsApp** - Abre o WhatsApp com a mensagem formatada pronta
-
-## 💾 Como Funciona o Carrinho
-
-- Os itens são salvos em `localStorage`
-- Funcionam mesmo se fechar o navegador
-- Limpa automaticamente após enviar o pedido
-
-## 📱 Responsividade
-
-O design é 100% mobile-first:
-- ✅ Funciona em smartphones
-- ✅ Funciona em tablets
-- ✅ Funciona em desktops
-- ✅ Botões grandes para mobile
-- ✅ Navegação otimizada
-
-## 🎨 Personalizando as Cores
-
-As cores principais são definidas em `config/restaurante.js`:
+Edite [`data/cardapio.js`](data/cardapio.js):
 
 ```javascript
-cores: {
-  principal: '#E74C3C',    // Cor principal dos botões
-  secundaria: '#F39C12',   // Cor secundária
-  fundo: '#FFF8F3',        // Cor de fundo
-  texto: '#2C3E50'         // Cor do texto
+{
+  id: 'produto-1',
+  nome: 'Nome do produto',
+  descricao: 'Descrição curta do produto',
+  preco: 25.00,
+  imagem: 'assets/produto.jpg'
 }
 ```
 
-Você pode usar:
-- Hex: `#E74C3C`
-- RGB: `rgb(231, 76, 60)`
-- Named colors: `red`
+Cada produto deve ter um `id` único. Use esses IDs em `produtosDestaque` para escolher os itens da seção “Mais pedidos”. Quando a lista não é configurada, o template usa os primeiros produtos do cardápio.
 
-## 🔗 Links Úteis
+## Fluxo do pedido
 
-- **Gerador de cores**: https://coolors.co/
-- **Emojis**: https://emojipedia.org/
-- **Paletas de cores para restaurante**: https://www.canva.com/learn/restaurant-color-schemes/
+1. `index.html`: apresentação e informações do restaurante.
+2. `cardapio.html`: categorias, produtos, destaques e carrinho.
+3. `pedido.html`: conferência, modalidade, pagamento e observações.
+4. WhatsApp: abertura do `wa.me` com a mensagem formatada.
 
-## ❓ Perguntas Frequentes
+O carrinho fica salvo no navegador com `localStorage` e é limpo depois do envio do pedido.
 
-### Como colocar uma logo em vez de emoji?
+## Estrutura
 
-Em `config/restaurante.js`:
-```javascript
-logo: 'https://seu-site.com/logo.png'
+```text
+cardapio-whatsapp-template/
+├── index.html
+├── cardapio.html
+├── pedido.html
+├── config/
+│   └── restaurante.js
+├── data/
+│   └── cardapio.js
+├── css/
+│   └── style.css
+├── js/
+│   ├── app.js
+│   ├── cart.js
+│   └── whatsapp.js
+└── assets/
 ```
 
-Depois em `index.html`, na linha onde tem `🍲`, mude para:
-```html
-<img src="URL_DA_LOGO" alt="Logo" style="width: 60px; height: 60px;">
-```
+## Publicação
 
-### O número do WhatsApp não funciona
+Por ser um projeto estático, pode ser publicado no GitHub Pages, Netlify, Vercel ou qualquer hospedagem de arquivos HTML.
 
-Certifique-se de:
-1. Usar o número com código do país: `55` (Brasil)
-2. Incluir o DDD: `11` (São Paulo)
-3. Sem formatação: `5511987654321` ✅ (não `55 (11) 98765-4321` ❌)
-
-### Posso adicionar múltiplas taxas de entrega por zona?
-
-Sim! Edite `js/cart.js` e a lógica em `pedido.html` para calcular taxa baseada em endereço. Será necessário um pouco de JavaScript adicional.
-
-### Como testar o WhatsApp localmente?
-
-O link de WhatsApp funciona normalmente no navegador. Se tiver WhatsApp Web aberto, abrirá lá. Senão, redireciona para a versão web.
-
-## 📄 Licença
-
-Este projeto é de código aberto. Use livremente para seus projetos!
-
-## 🤝 Contribuições
-
-Encontrou um bug ou tem uma sugestão? Abra uma issue ou faça um pull request!
-
----
-
-**Desenvolvido com ❤️ para pequenos e médios restaurantes**
-
-Aproveite! 🎉
+O WhatsApp deve estar no formato internacional, somente com números. Exemplo: `5511987654321`.

@@ -3,307 +3,274 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cardápio - Sabor Brasileiro</title>
+  <meta name="theme-color" content="#E74C3C">
+  <title>Cardápio</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="cardapio">
-  <!-- HEADER -->
-  <header>
-    <div class="container">
-      <h1 id="header-restaurante">🍲 Sabor Brasileiro</h1>
-      <p id="header-slogan">Comida caseira, sabor de família</p>
+  <header class="app-header menu-header">
+    <div class="container header-top">
+      <a href="index.html" class="restaurante-logo" aria-label="Voltar para o início">
+        <div class="logo-badge" id="header-logo" aria-hidden="true">🍲</div>
+        <div class="restaurante-info">
+          <span class="small-label">Peça online</span>
+          <h1 id="header-restaurante">Restaurante</h1>
+          <div class="status-line">
+            <span class="status-chip" id="status-aberto">Aberto agora</span>
+            <span id="header-horario">Consulte o horário</span>
+          </div>
+        </div>
+      </a>
+      <a data-whatsapp href="#" target="_blank" rel="noopener" class="contact-button" aria-label="Falar no WhatsApp">
+        <span class="contact-icon">☎</span><span>Contato</span>
+      </a>
     </div>
   </header>
 
-  <!-- NAVEGAÇÃO DE CATEGORIAS -->
-  <nav id="navegacao-categorias">
-    <ul id="lista-categorias">
-      <!-- Preenchida por JavaScript -->
-    </ul>
+  <section class="menu-hero" id="menu-hero">
+    <div class="container menu-hero-content">
+      <span class="hero-eyebrow">Pedido fácil e rápido</span>
+      <h2 id="menu-banner-titulo">Escolha o que combina com sua fome</h2>
+      <p id="menu-banner-texto">Adicione os itens ao carrinho e finalize pelo WhatsApp.</p>
+      <div class="delivery-meta">
+        <span>◷ <strong id="tempo-entrega">35-50 min</strong></span>
+        <span>⌁ Taxa a partir de <strong id="taxa-entrega">R$ 0,00</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <nav class="category-nav" id="navegacao-categorias" aria-label="Categorias do cardápio">
+    <div class="container">
+      <ul id="lista-categorias"></ul>
+    </div>
   </nav>
 
-  <!-- CONTEÚDO PRINCIPAL -->
-  <main class="container">
-    <!-- PRODUTOS POR CATEGORIA -->
-    <div id="conteudo-cardapio">
-      <!-- Preenchida por JavaScript -->
-    </div>
-
-    <!-- RESUMO DO CARRINHO -->
-    <section id="secao-carrinho" style="display: none; margin-top: var(--espacamento-xl);">
-      <h2 style="font-size: 1.5rem; color: var(--cor-principal); margin-bottom: var(--espacamento-lg);">
-        🛒 Seu Carrinho
-      </h2>
-
-      <div id="carrinho-vazio" class="caixa-vazia">
-        <div class="caixa-vazia-icone">🛒</div>
-        <h3>Carrinho Vazio</h3>
-        <p>Adicione produtos ao seu carrinho para continuar</p>
-      </div>
-
-      <div id="carrinho-itens" style="display: none;">
-        <table class="tabela-itens">
-          <thead>
-            <tr>
-              <th>Produto</th>
-              <th style="text-align: center;">Qtd.</th>
-              <th style="text-align: right;">Preço Unit.</th>
-              <th style="text-align: right;">Subtotal</th>
-              <th style="text-align: center;">Ação</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-carrinho">
-            <!-- Preenchida por JavaScript -->
-          </tbody>
-        </table>
-
-        <div class="resumo-pedido">
-          <div class="resumo-linha">
-            <span>Subtotal:</span>
-            <span id="resumo-subtotal">R$ 0,00</span>
-          </div>
-          <div class="resumo-linha" id="linha-taxa" style="display: none;">
-            <span>Taxa de Entrega:</span>
-            <span id="resumo-taxa">R$ 0,00</span>
-          </div>
-          <div class="resumo-total">
-            <span>Total: </span>
-            <span id="resumo-total">R$ 0,00</span>
-          </div>
+  <main class="container menu-content">
+    <section class="featured-section" id="secao-destaque">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Favoritos da casa</span>
+          <h2>Mais pedidos</h2>
         </div>
+        <span class="featured-badge">Popular</span>
+      </div>
+      <div id="destaque-produtos" class="featured-scroller"></div>
+    </section>
 
-        <a href="pedido.html" class="btn btn-bloco" style="background-color: var(--cor-sucesso); margin-bottom: var(--espacamento-md);">
-          Finalizar Pedido ✓
-        </a>
-        <button type="button" onclick="limparCarrinho()" class="btn-bloco" style="background-color: var(--cor-texto-claro);">
-          Limpar Carrinho
-        </button>
+    <div id="conteudo-cardapio"></div>
+
+    <section id="secao-carrinho" class="cart-section" hidden>
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Confira antes de finalizar</span>
+          <h2>Seu pedido</h2>
+        </div>
+        <button type="button" onclick="limparCarrinho()" class="text-button">Limpar</button>
+      </div>
+      <div id="carrinho-itens">
+        <div id="lista-carrinho" class="cart-list"></div>
+        <div class="order-totals">
+          <div><span>Subtotal</span><strong id="resumo-subtotal">R$ 0,00</strong></div>
+          <div class="order-total"><span>Total</span><strong id="resumo-total">R$ 0,00</strong></div>
+        </div>
+        <a href="pedido.html" class="btn btn-primary btn-block">Continuar para o checkout <span>→</span></a>
       </div>
     </section>
   </main>
 
-  <!-- RODAPÉ -->
   <footer>
-    <p>&copy; 2024 Cardápio Online - Todos os direitos reservados</p>
+    <strong id="footer-restaurante">Restaurante</strong>
+    <span>Pedido direto pelo WhatsApp</span>
   </footer>
 
-  <!-- CARRINHO FLUTUANTE -->
-  <div class="carrinho-flutuante">
-    <a href="#secao-carrinho" class="btn btn-carrinho" onclick="scrollParaCarrinho()">
-      🛒
-      <span id="carrinho-contador" style="display: none;">0</span>
-    </a>
+  <div class="cart-bar" id="barra-pedido-fixo" hidden>
+    <button type="button" onclick="scrollParaCarrinho()" class="cart-bar-inner">
+      <span class="cart-count" id="barra-itens">0 itens</span>
+      <span class="cart-cta">Ver pedido</span>
+      <strong id="barra-total">R$ 0,00</strong>
+    </button>
   </div>
 
-  <!-- SCRIPTS -->
   <script src="config/restaurante.js"></script>
   <script src="data/cardapio.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/whatsapp.js"></script>
   <script src="js/app.js"></script>
-
-  <!-- INICIALIZAÇÃO DO CARDÁPIO -->
   <script>
-    /**
-     * Renderiza o cardápio
-     */
-    function renderizarCardapio() {
-      const containerCardapio = document.getElementById('conteudo-cardapio');
-      const navCategorias = document.getElementById('lista-categorias');
-      
-      containerCardapio.innerHTML = '';
-      navCategorias.innerHTML = '';
+    function criarCardProduto(produto, categoria, destaque = false) {
+      const card = document.createElement('article');
+      card.className = destaque ? 'product-card featured-card' : 'product-card';
 
-      // Renderiza cada categoria
-      Cardapio.categorias.forEach((categoria, index) => {
-        // Adiciona link de navegação
-        const liNav = document.createElement('li');
-        const aNav = document.createElement('a');
-        aNav.href = `#categoria-${categoria.id}`;
-        aNav.textContent = categoria.nome;
-        aNav.className = index === 0 ? 'active' : '';
-        liNav.appendChild(aNav);
-        navCategorias.appendChild(liNav);
+      const media = document.createElement('div');
+      media.className = 'product-media';
+      App.renderizarMidia(media, produto.imagem, produto.nome);
 
-        // Adiciona seção da categoria
-        const secao = document.createElement('section');
-        secao.className = 'secao-categoria';
-        secao.id = `categoria-${categoria.id}`;
-
-        const titulo = document.createElement('h2');
-        titulo.className = 'categoria-titulo';
-        titulo.textContent = categoria.nome;
-        secao.appendChild(titulo);
-
-        const descricao = document.createElement('p');
-        descricao.className = 'categoria-descricao';
-        descricao.textContent = categoria.descricao;
-        secao.appendChild(descricao);
-
-        // Grid de produtos
-        const grid = document.createElement('div');
-        grid.className = 'grid-produtos';
-
-        categoria.produtos.forEach(produto => {
-          const card = criarCardProduto(produto, categoria);
-          grid.appendChild(card);
-        });
-
-        secao.appendChild(grid);
-        containerCardapio.appendChild(secao);
-      });
-    }
-
-    /**
-     * Cria um card de produto
-     */
-    function criarCardProduto(produto, categoria) {
-      const card = document.createElement('div');
-      card.className = 'card-produto';
-
-      card.innerHTML = `
-        <div class="card-imagem">${produto.imagem || '🍽️'}</div>
-        <div class="card-conteudo">
-          <div class="card-nome">${produto.nome}</div>
-          <div class="card-descricao">${produto.descricao}</div>
-          <div class="card-preco">${App.formatarMoeda(produto.preco)}</div>
-          <button type="button" onclick="adicionarAoCarrinho('${produto.id}', '${categoria.nome}')">
-            Adicionar ao Carrinho
-          </button>
+      const content = document.createElement('div');
+      content.className = 'product-content';
+      content.innerHTML = `
+        <small>${categoria.nome}</small>
+        <h3>${produto.nome}</h3>
+        <p>${produto.descricao}</p>
+        <div class="product-footer">
+          <strong>${App.formatarMoeda(produto.preco)}</strong>
+          <button type="button" class="add-button" aria-label="Adicionar ${produto.nome}" onclick="adicionarAoCarrinho('${produto.id}')">+</button>
         </div>
       `;
 
+      card.append(media, content);
       return card;
     }
 
-    /**
-     * Adiciona produto ao carrinho
-     */
-    function adicionarAoCarrinho(produtoId, categoriaNome) {
-      const produto = Cardapio.obterProduto(produtoId);
-      if (produto) {
-        carrinho.adicionar(produto);
-        atualizarCarrinho();
-        App.mostrarMensagem(`${produto.nome} adicionado ao carrinho!`, 'sucesso');
-      }
+    function renderizarCardapio() {
+      const container = document.getElementById('conteudo-cardapio');
+      const navegacao = document.getElementById('lista-categorias');
+      container.replaceChildren();
+      navegacao.replaceChildren();
+
+      Cardapio.categorias.forEach((categoria, index) => {
+        const itemNav = document.createElement('li');
+        const linkNav = document.createElement('a');
+        linkNav.href = `#categoria-${categoria.id}`;
+        linkNav.textContent = categoria.nome;
+        if (index === 0) linkNav.classList.add('active');
+        linkNav.addEventListener('click', event => {
+          event.preventDefault();
+          document.querySelectorAll('#lista-categorias a').forEach(link => link.classList.remove('active'));
+          linkNav.classList.add('active');
+          document.getElementById(`categoria-${categoria.id}`).scrollIntoView({ behavior: 'smooth' });
+        });
+        itemNav.appendChild(linkNav);
+        navegacao.appendChild(itemNav);
+
+        const secao = document.createElement('section');
+        secao.className = 'menu-category';
+        secao.id = `categoria-${categoria.id}`;
+        secao.innerHTML = `
+          <div class="category-heading">
+            <h2>${categoria.nome}</h2>
+            <p>${categoria.descricao}</p>
+          </div>
+        `;
+
+        const lista = document.createElement('div');
+        lista.className = 'product-list';
+        categoria.produtos.forEach(produto => lista.appendChild(criarCardProduto(produto, categoria)));
+        secao.appendChild(lista);
+        container.appendChild(secao);
+      });
     }
 
-    /**
-     * Atualiza a exibição do carrinho
-     */
+    function renderizarDestaques() {
+      const container = document.getElementById('destaque-produtos');
+      const ids = Restaurante.produtosDestaque || [];
+      let produtos = ids.map(id => Cardapio.obterProduto(id)).filter(Boolean);
+
+      if (!produtos.length) {
+        produtos = Cardapio.categorias.flatMap(categoria =>
+          categoria.produtos.map(produto => ({ ...produto, categoria: categoria.nome }))
+        ).slice(0, 3);
+      }
+
+      container.replaceChildren();
+      produtos.forEach(produto => {
+        container.appendChild(criarCardProduto(produto, { nome: produto.categoria }, true));
+      });
+      document.getElementById('secao-destaque').hidden = produtos.length === 0;
+    }
+
+    function adicionarAoCarrinho(produtoId) {
+      const produto = Cardapio.obterProduto(produtoId);
+      if (!produto) return;
+      carrinho.adicionar(produto);
+      atualizarCarrinho();
+      App.mostrarMensagem(`${produto.nome} adicionado`, 'sucesso');
+    }
+
     function atualizarCarrinho() {
       App.atualizarContador();
-      const items = carrinho.obterItems();
-      const secaoCarrinho = document.getElementById('secao-carrinho');
-      const carrinhoVazio = document.getElementById('carrinho-vazio');
-      const carrinhoItens = document.getElementById('carrinho-itens');
-      const tbodyCarrinho = document.getElementById('tbody-carrinho');
+      const secao = document.getElementById('secao-carrinho');
+      const lista = document.getElementById('lista-carrinho');
+      const itens = carrinho.obterItems();
+      const vazio = carrinho.estaVazio();
 
-      if (carrinho.estaVazio()) {
-        secaoCarrinho.style.display = 'block';
-        carrinhoVazio.style.display = 'block';
-        carrinhoItens.style.display = 'none';
-      } else {
-        secaoCarrinho.style.display = 'block';
-        carrinhoVazio.style.display = 'none';
-        carrinhoItens.style.display = 'block';
+      secao.hidden = vazio;
+      lista.replaceChildren();
 
-        // Limpa tabela
-        tbodyCarrinho.innerHTML = '';
+      itens.forEach(item => {
+        const linha = document.createElement('article');
+        linha.className = 'cart-item';
+        const media = document.createElement('div');
+        media.className = 'cart-item-media';
+        App.renderizarMidia(media, item.imagem, item.nome);
 
-        // Renderiza itens
-        items.forEach(item => {
-          const tr = document.createElement('tr');
-          const subtotal = item.preco * item.quantidade;
+        const info = document.createElement('div');
+        info.className = 'cart-item-info';
+        info.innerHTML = `<h3>${item.nome}</h3><strong>${App.formatarMoeda(item.preco * item.quantidade)}</strong>`;
 
-          tr.innerHTML = `
-            <td>${item.nome}</td>
-            <td style="text-align: center;">
-              <div class="quantidade-controle">
-                <button type="button" onclick="diminuirQuantidade('${item.id}')" class="btn-pequeno">−</button>
-                <span>${item.quantidade}</span>
-                <button type="button" onclick="aumentarQuantidade('${item.id}')" class="btn-pequeno">+</button>
-              </div>
-            </td>
-            <td style="text-align: right;">${App.formatarMoeda(item.preco)}</td>
-            <td style="text-align: right;">${App.formatarMoeda(subtotal)}</td>
-            <td style="text-align: center;">
-              <button type="button" onclick="removerDoCarrinho('${item.id}')" class="btn-pequeno" style="background-color: var(--cor-erro);">
-                ✕
-              </button>
-            </td>
-          `;
+        const controle = document.createElement('div');
+        controle.className = 'quantity-control';
+        controle.innerHTML = `
+          <button type="button" onclick="diminuirQuantidade('${item.id}')" aria-label="Diminuir quantidade">−</button>
+          <span>${item.quantidade}</span>
+          <button type="button" onclick="aumentarQuantidade('${item.id}')" aria-label="Aumentar quantidade">+</button>
+        `;
+        linha.append(media, info, controle);
+        lista.appendChild(linha);
+      });
 
-          tbodyCarrinho.appendChild(tr);
-        });
-      }
-
-      // Atualiza resumo
-      const subtotal = carrinho.obterValorTotal();
-      document.getElementById('resumo-subtotal').textContent = App.formatarMoeda(subtotal);
-      document.getElementById('resumo-total').textContent = App.formatarMoeda(subtotal);
+      const total = carrinho.obterValorTotal();
+      document.getElementById('resumo-subtotal').textContent = App.formatarMoeda(total);
+      document.getElementById('resumo-total').textContent = App.formatarMoeda(total);
+      atualizarBarraPedido();
     }
 
-    /**
-     * Remove produto do carrinho
-     */
-    function removerDoCarrinho(produtoId) {
-      carrinho.remover(produtoId);
-      atualizarCarrinho();
-      App.mostrarMensagem('Produto removido do carrinho', 'info');
+    function atualizarBarraPedido() {
+      const barra = document.getElementById('barra-pedido-fixo');
+      const quantidade = carrinho.obterQuantidadeTotal();
+      barra.hidden = quantidade === 0;
+      document.body.classList.toggle('has-cart-bar', quantidade > 0);
+      document.getElementById('barra-itens').textContent = `${quantidade} ${quantidade === 1 ? 'item' : 'itens'}`;
+      document.getElementById('barra-total').textContent = App.formatarMoeda(carrinho.obterValorTotal());
     }
 
-    /**
-     * Aumenta quantidade
-     */
-    function aumentarQuantidade(produtoId) {
-      carrinho.aumentarQuantidade(produtoId);
+    function aumentarQuantidade(id) {
+      carrinho.aumentarQuantidade(id);
       atualizarCarrinho();
     }
 
-    /**
-     * Diminui quantidade
-     */
-    function diminuirQuantidade(produtoId) {
-      carrinho.diminuirQuantidade(produtoId);
+    function diminuirQuantidade(id) {
+      carrinho.diminuirQuantidade(id);
       atualizarCarrinho();
     }
 
-    /**
-     * Limpa o carrinho
-     */
     function limparCarrinho() {
-      if (confirm('Tem certeza que deseja limpar o carrinho?')) {
+      if (!carrinho.estaVazio() && confirm('Deseja remover todos os itens do pedido?')) {
         carrinho.limpar();
         atualizarCarrinho();
-        App.mostrarMensagem('Carrinho limpo', 'info');
       }
     }
 
-    /**
-     * Scroll para o carrinho
-     */
     function scrollParaCarrinho() {
       document.getElementById('secao-carrinho').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Inicializa quando o DOM está pronto
     document.addEventListener('DOMContentLoaded', () => {
-      // Atualiza dados do restaurante
-      document.getElementById('header-restaurante').textContent = Restaurante.nome;
-      document.getElementById('header-slogan').textContent = Restaurante.slogan;
+      document.title = `Cardápio - ${Restaurante.nome}`;
+      document.getElementById('menu-banner-titulo').textContent = Restaurante.bannerTitulo || Restaurante.slogan;
+      document.getElementById('menu-banner-texto').textContent = Restaurante.bannerTexto || Restaurante.slogan;
+      document.getElementById('tempo-entrega').textContent = Restaurante.tempoEntrega || 'Consulte';
+      document.getElementById('taxa-entrega').textContent = App.formatarMoeda(Restaurante.taxaEntregaPadrao || 0);
+      document.getElementById('footer-restaurante').textContent = Restaurante.nome;
 
-      // Define cores
-      const root = document.documentElement;
-      root.style.setProperty('--cor-principal', Restaurante.cores.principal);
-      root.style.setProperty('--cor-secundaria', Restaurante.cores.secundaria);
-      root.style.setProperty('--cor-fundo', Restaurante.cores.fundo);
-      root.style.setProperty('--cor-texto', Restaurante.cores.texto);
+      const hero = document.getElementById('menu-hero');
+      if (Restaurante.bannerImagem) {
+        hero.style.setProperty('--banner-image', `url("${Restaurante.bannerImagem}")`);
+        hero.classList.add('has-image');
+      }
 
-      // Renderiza cardápio
+      renderizarDestaques();
       renderizarCardapio();
-
-      // Atualiza carrinho
       atualizarCarrinho();
     });
   </script>
