@@ -1,8 +1,9 @@
 import logging
+import secrets
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 
 from config.settings import get_settings
@@ -30,6 +31,18 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
+
+
+def require_admin_api_key(
+    x_admin_api_key: str | None = Header(default=None, alias="X-Admin-API-Key"),
+) -> None:
+    expected_key = settings.admin_api_key
+    if (
+        not expected_key
+        or not x_admin_api_key
+        or not secrets.compare_digest(x_admin_api_key, expected_key)
+    ):
+        raise HTTPException(status_code=401, detail="Chave administrativa invalida.")
 
 
 @app.get("/health")
@@ -96,13 +109,13 @@ async def receive_whatsapp_webhook(request: Request) -> JSONResponse:
     return JSONResponse({"status": "received"})
 
 
-@app.get("/pedidos")
+@app.get("/pedidos", dependencies=[Depends(require_admin_api_key)])
 def list_orders(limit: int = Query(default=50, ge=1, le=200)) -> dict[str, Any]:
     orders = order_service.list_orders(limit)
     return {"count": len(orders), "orders": orders}
 
 
-@app.get("/pedidos/{pedido_id}")
+@app.get("/pedidos/{pedido_id}", dependencies=[Depends(require_admin_api_key)])
 def get_order(pedido_id: int) -> dict[str, Any]:
     order = order_service.get_order(pedido_id)
     if not order:

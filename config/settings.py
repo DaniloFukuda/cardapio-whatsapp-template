@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     delivery_fee: float = 5.0
 
     public_base_url: str = "http://localhost:8000"
+    admin_api_key: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -7,4 +7,5 @@ __pycache__
 *.pyc
 *.db
 *.log
+backups
 legacy_static

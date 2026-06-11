@@ -28,7 +28,42 @@ def configure_test_app(monkeypatch, tmp_path):
     monkeypatch.setattr(web_app, "order_service", orders)
     monkeypatch.setattr(web_app, "session_service", sessions)
     monkeypatch.setattr(web_app, "whatsapp_client", whatsapp)
+    monkeypatch.setattr(web_app.settings, "admin_api_key", "admin-test-key")
     return database, whatsapp
+
+
+def test_health_is_public(monkeypatch, tmp_path):
+    configure_test_app(monkeypatch, tmp_path)
+
+    with TestClient(web_app.app) as client:
+        response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "ok"
+
+
+def test_orders_require_admin_api_key(monkeypatch, tmp_path):
+    configure_test_app(monkeypatch, tmp_path)
+
+    with TestClient(web_app.app) as client:
+        missing = client.get("/pedidos")
+        invalid = client.get(
+            "/pedidos", headers={"X-Admin-API-Key": "wrong-key"}
+        )
+        authorized = client.get(
+            "/pedidos", headers={"X-Admin-API-Key": "admin-test-key"}
+        )
+        detail_missing = client.get("/pedidos/1")
+        detail_authorized = client.get(
+            "/pedidos/1", headers={"X-Admin-API-Key": "admin-test-key"}
+        )
+
+    assert missing.status_code == 401
+    assert invalid.status_code == 401
+    assert authorized.status_code == 200
+    assert authorized.json() == {"count": 0, "orders": []}
+    assert detail_missing.status_code == 401
+    assert detail_authorized.status_code == 404
 
 
 def test_webhook_verification(monkeypatch, tmp_path):

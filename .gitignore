@@ -17,6 +17,7 @@ venv/
 *.db-shm
 *.db-wal
 data/app.db
+backups/
 
 # Dependencies
 node_modules/

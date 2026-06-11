@@ -19,7 +19,7 @@ disponíveis no dia, finaliza o pedido e recebe a confirmação no WhatsApp.
 - Entrega ou retirada, endereço, pagamento e observações
 - Pedidos persistidos em SQLite antes da notificação da equipe
 - Notificação organizada para o WhatsApp da equipe
-- Endpoints JSON para consultar os pedidos
+- Endpoints JSON protegidos por chave para consultar os pedidos
 - Docker Compose e script simples de deploy para VPS
 
 ## Estrutura
@@ -127,6 +127,7 @@ RESTAURANT_STAFF_WHATSAPP_NUMBER=5511999999999
 DELIVERY_FEE=5.00
 
 PUBLIC_BASE_URL=https://cardapio.seudominio.com.br
+ADMIN_API_KEY=troque_por_uma_chave_forte
 ```
 
 Nunca versione `.env`, tokens reais, bancos SQLite ou logs com dados de
@@ -151,15 +152,13 @@ entrada e processa o atendimento. Eventos sem mensagem são aceitos com HTTP
 
 ### `GET /pedidos`
 
-Lista os pedidos mais recentes em JSON. Aceita `limit` entre 1 e 200.
+Lista os pedidos mais recentes em JSON. Aceita `limit` entre 1 e 200 e exige o
+header `X-Admin-API-Key` com o valor configurado em `ADMIN_API_KEY`.
 
 ### `GET /pedidos/{pedido_id}`
 
-Retorna os detalhes de um pedido ou HTTP 404.
-
-Os endpoints `/pedidos` são administrativos e deliberadamente simples nesta
-primeira versão. Proteja-os no proxy reverso ou adicione autenticação antes de
-expor o serviço publicamente.
+Retorna os detalhes de um pedido ou HTTP 404. Também exige o header
+`X-Admin-API-Key`. Chaves ausentes ou incorretas recebem HTTP 401.
 
 ## Configurar o webhook na Meta
 

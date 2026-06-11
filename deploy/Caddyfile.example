@@ -1,0 +1,4 @@
+# Troque pedidos.seudominio.com.br pelo dominio real antes de usar.
+pedidos.seudominio.com.br {
+    reverse_proxy 127.0.0.1:8000
+}
