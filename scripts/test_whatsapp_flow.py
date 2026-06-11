@@ -13,6 +13,19 @@ from services.order_service import OrderService
 from services.session_service import SessionService
 
 
+def simulate(
+    sessions: SessionService, phone: str, messages: list[str], expected_total: float
+):
+    result = None
+    for message in messages:
+        result = sessions.handle_message(phone, message)
+        print(f"\nCLIENTE: {message}\nBOT: {result.reply}")
+
+    assert result is not None and result.order is not None
+    assert result.order["total"] == expected_total
+    return result.order
+
+
 def main() -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         database_path = Path(temp_dir) / "flow.db"
@@ -22,29 +35,39 @@ def main() -> None:
         orders = OrderService(database, delivery_fee=5.0)
         sessions = SessionService(database, menu, orders, "Sabor Brasileiro")
 
-        messages = [
-            "oi",
-            "1",
-            "1",
-            "2",
-            "2",
-            "3",
-            "João",
-            "2",
-            "1",
-            "não",
-            "1",
-        ]
-        result = None
-        for message in messages:
-            result = sessions.handle_message("5561999999999", message)
-            print(f"\nCLIENTE: {message}\nBOT: {result.reply}")
+        small = simulate(
+            sessions,
+            "5561999999991",
+            ["oi", "1", "1", "1", "2", "3", "Ana", "2", "1", "não", "1"],
+            42.0,
+        )
+        assert small["items"][0]["name"] == "Marmita pequena"
+        assert small["items"][0]["meats"][0]["name"] == "Churrasco"
 
-        assert result is not None and result.order is not None
-        assert result.order["order_number"] == "PED-000001"
-        assert result.order["total"] == 44.0
-        assert len(orders.list_orders()) == 1
-        print("\nFluxo simulado concluído com sucesso.")
+        two_meats = simulate(
+            sessions,
+            "5561999999992",
+            [
+                "menu",
+                "1",
+                "2",
+                "1 e 2",
+                "2",
+                "3",
+                "João",
+                "2",
+                "1",
+                "não",
+                "1",
+            ],
+            46.0,
+        )
+        assert [meat["name"] for meat in two_meats["items"][0]["meats"]] == [
+            "Churrasco",
+            "Frango",
+        ]
+        assert len(orders.list_orders()) == 2
+        print("\nFluxos de marmita pequena e de 2 carnes concluídos com sucesso.")
 
 
 if __name__ == "__main__":

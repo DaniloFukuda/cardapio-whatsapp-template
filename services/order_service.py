@@ -15,17 +15,23 @@ class OrderService:
         return {"items": [], "context": {}}
 
     def add_item(
-        self, cart: dict[str, Any], product: dict[str, Any], quantity: int
+        self,
+        cart: dict[str, Any],
+        marmita_type: dict[str, Any],
+        meats: list[dict[str, Any]],
+        quantity: int,
     ) -> dict[str, Any]:
         if quantity < 1:
             raise ValueError("A quantidade deve ser maior que zero.")
 
+        meat_ids = sorted(meat["id"] for meat in meats)
+        variant_id = f"{marmita_type['id']}--{'-'.join(meat_ids)}"
         normalized = {
-            "items": list(cart.get("items", [])),
-            "context": dict(cart.get("context", {})),
+            "items": [dict(item) for item in cart.get("items", [])],
+            "context": {},
         }
         existing = next(
-            (item for item in normalized["items"] if item["product_id"] == product["id"]),
+            (item for item in normalized["items"] if item["variant_id"] == variant_id),
             None,
         )
         if existing:
@@ -33,13 +39,14 @@ class OrderService:
         else:
             normalized["items"].append(
                 {
-                    "product_id": product["id"],
-                    "name": product["nome"],
-                    "unit_price": float(product["preco"]),
+                    "variant_id": variant_id,
+                    "marmita_type_id": marmita_type["id"],
+                    "name": marmita_type["nome"],
+                    "meats": [{"id": meat["id"], "name": meat["nome"]} for meat in meats],
+                    "unit_price": float(marmita_type["preco"]),
                     "quantity": quantity,
                 }
             )
-        normalized["context"] = {}
         return normalized
 
     @staticmethod
@@ -60,21 +67,31 @@ class OrderService:
             "total": round(subtotal + delivery_fee, 2),
         }
 
+    def format_item(self, item: dict[str, Any], bullet: bool = False) -> str:
+        prefix = "- " if bullet else ""
+        meat_names = " e ".join(meat["name"] for meat in item["meats"])
+        item_total = float(item["unit_price"]) * int(item["quantity"])
+        return "\n".join(
+            [
+                f"{prefix}{item['quantity']}x {item['name']}",
+                f"  Carnes: {meat_names}" if bullet else f"Carnes: {meat_names}",
+                (
+                    f"  Unitário: {format_currency(item['unit_price'])}"
+                    if bullet
+                    else f"Valor unitário: {format_currency(item['unit_price'])}"
+                ),
+                f"  Total: {format_currency(item_total)}" if bullet else f"Total: {format_currency(item_total)}",
+            ]
+        )
+
     def format_cart(self, cart: dict[str, Any]) -> str:
         items = cart.get("items", [])
         if not items:
             return "Seu carrinho está vazio."
 
-        lines = ["Seu carrinho:", ""]
-        for item in items:
-            item_total = float(item["unit_price"]) * int(item["quantity"])
-            lines.append(
-                f"- {item['quantity']}x {item['name']} - {format_currency(item_total)}"
-            )
-        lines.extend(
-            ["", f"Subtotal: {format_currency(self.calculate_subtotal(items))}"]
-        )
-        return "\n".join(lines)
+        formatted_items = "\n\n".join(self.format_item(item) for item in items)
+        subtotal = format_currency(self.calculate_subtotal(items))
+        return f"Seu carrinho:\n\n{formatted_items}\n\nSubtotal: {subtotal}"
 
     def format_confirmation(self, session: dict[str, Any]) -> str:
         cart = session["cart"]
@@ -92,15 +109,8 @@ class OrderService:
                 f"Pagamento: {session['payment_method'].title()}",
                 "",
                 "Itens:",
-            ]
-        )
-        for item in cart["items"]:
-            item_total = float(item["unit_price"]) * int(item["quantity"])
-            lines.append(
-                f"{item['quantity']}x {item['name']} - {format_currency(item_total)}"
-            )
-        lines.extend(
-            [
+                "",
+                "\n\n".join(self.format_item(item) for item in cart["items"]),
                 "",
                 f"Subtotal: {format_currency(totals['subtotal'])}",
                 f"Taxa de entrega: {format_currency(totals['delivery_fee'])}",
@@ -149,7 +159,6 @@ class OrderService:
                 ),
             )
             order_id = cursor.lastrowid
-
         return self.get_order(order_id)
 
     def get_order(self, order_id: int) -> dict[str, Any] | None:
@@ -196,15 +205,8 @@ class OrderService:
                 f"Pagamento: {order['payment_method'].title()}",
                 "",
                 "Itens:",
-            ]
-        )
-        for item in order["items"]:
-            item_total = float(item["unit_price"]) * int(item["quantity"])
-            lines.append(
-                f"- {item['quantity']}x {item['name']} - {format_currency(item_total)}"
-            )
-        lines.extend(
-            [
+                "",
+                "\n\n".join(self.format_item(item, bullet=True) for item in order["items"]),
                 "",
                 f"Subtotal: {format_currency(order['subtotal'])}",
                 f"Taxa de entrega: {format_currency(order['delivery_fee'])}",

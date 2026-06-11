@@ -9,8 +9,8 @@ from services.order_service import OrderService
 
 
 MAIN_MENU = "main_menu"
-AWAITING_CATEGORY = "awaiting_category"
-AWAITING_PRODUCT = "awaiting_product"
+AWAITING_MARMITA = "awaiting_marmita"
+AWAITING_MEATS = "awaiting_meats"
 AWAITING_QUANTITY = "awaiting_quantity"
 AFTER_ADD = "after_add"
 AWAITING_NAME = "awaiting_name"
@@ -81,8 +81,8 @@ class SessionService:
         state = session["current_state"]
         handlers = {
             MAIN_MENU: self._handle_main_menu,
-            AWAITING_CATEGORY: self._handle_category,
-            AWAITING_PRODUCT: self._handle_product,
+            AWAITING_MARMITA: self._handle_marmita,
+            AWAITING_MEATS: self._handle_meats,
             AWAITING_QUANTITY: self._handle_quantity,
             AFTER_ADD: self._handle_after_add,
             AWAITING_NAME: self._handle_name,
@@ -99,9 +99,9 @@ class SessionService:
         self, session: dict[str, Any], text: str
     ) -> FlowResult:
         if text == "1":
-            session["current_state"] = AWAITING_CATEGORY
+            session["current_state"] = AWAITING_MARMITA
             self._save(session)
-            return FlowResult(self.menu_service.format_categories_menu())
+            return FlowResult(self.menu_service.format_daily_menu())
         if text == "2":
             session["current_state"] = AFTER_ADD
             self._save(session)
@@ -115,41 +115,49 @@ class SessionService:
             f"Opção inválida.\n\n{self._main_menu(greeting=False)}"
         )
 
-    def _handle_category(
+    def _handle_marmita(
         self, session: dict[str, Any], text: str
     ) -> FlowResult:
-        categories = self.menu_service.list_categories()
-        index = parse_choice(text, len(categories))
-        if index is None:
+        marmita_type = self.menu_service.get_marmita_type(text)
+        if marmita_type is None:
             return FlowResult(
-                f"Categoria inválida.\n\n{self.menu_service.format_categories_menu()}"
+                f"Marmita inválida.\n\n{self.menu_service.format_daily_menu()}"
             )
 
-        category = categories[index]
-        session["cart"]["context"] = {"category_id": category["id"]}
-        session["current_state"] = AWAITING_PRODUCT
+        session["cart"]["context"] = {"marmita_type_id": marmita_type["id"]}
+        session["current_state"] = AWAITING_MEATS
         self._save(session)
-        return FlowResult(self.menu_service.format_products_menu(category["id"]))
+        return FlowResult(self.menu_service.format_meat_menu(marmita_type))
 
-    def _handle_product(
+    def _handle_meats(
         self, session: dict[str, Any], text: str
     ) -> FlowResult:
-        category_id = session["cart"]["context"].get("category_id")
-        products = self.menu_service.list_products_by_category(category_id)
-        index = parse_choice(text, len(products))
-        if index is None:
+        marmita_type = self.menu_service.get_marmita_type(
+            session["cart"]["context"].get("marmita_type_id", "")
+        )
+        if marmita_type is None:
+            session["current_state"] = AWAITING_MARMITA
+            session["cart"]["context"] = {}
+            self._save(session)
             return FlowResult(
-                f"Produto inválido.\n\n"
-                f"{self.menu_service.format_products_menu(category_id)}"
+                "A marmita selecionada não está mais disponível.\n\n"
+                f"{self.menu_service.format_daily_menu()}"
             )
 
-        product = products[index]
-        session["cart"]["context"]["product_id"] = product["id"]
+        try:
+            meats = self.menu_service.parse_meat_choices(text)
+            self.menu_service.validate_meat_choices(marmita_type, meats)
+        except ValueError as exc:
+            return FlowResult(
+                f"{exc}\n\n{self.menu_service.format_meat_menu(marmita_type)}"
+            )
+
+        session["cart"]["context"]["meat_ids"] = [meat["id"] for meat in meats]
         session["current_state"] = AWAITING_QUANTITY
         self._save(session)
+        meat_names = " e ".join(meat["nome"] for meat in meats)
         return FlowResult(
-            f"Você escolheu {product['nome']} - "
-            f"{format_currency(product['preco'])}.\n\n"
+            f"Carnes escolhidas: {meat_names}.\n\n"
             "Digite a quantidade desejada."
         )
 
@@ -163,25 +171,37 @@ class SessionService:
         if quantity < 1 or quantity > 99:
             return FlowResult("Digite uma quantidade válida entre 1 e 99.")
 
-        product_id = session["cart"]["context"].get("product_id")
-        product = self.menu_service.get_product(product_id)
-        if not product:
-            session["current_state"] = AWAITING_CATEGORY
+        marmita_type = self.menu_service.get_marmita_type(
+            session["cart"]["context"].get("marmita_type_id", "")
+        )
+        meats = [
+            self.menu_service.get_meat(meat_id)
+            for meat_id in session["cart"]["context"].get("meat_ids", [])
+        ]
+        if marmita_type is None or not meats or any(meat is None for meat in meats):
+            session["current_state"] = AWAITING_MARMITA
             session["cart"]["context"] = {}
             self._save(session)
             return FlowResult(
-                "O produto não está mais disponível.\n\n"
-                f"{self.menu_service.format_categories_menu()}"
+                "O cardápio do dia mudou. Escolha sua marmita novamente.\n\n"
+                f"{self.menu_service.format_daily_menu()}"
             )
 
         session["cart"] = self.order_service.add_item(
-            session["cart"], product, quantity
+            session["cart"], marmita_type, meats, quantity
         )
         session["current_state"] = AFTER_ADD
         self._save(session)
+        added_item = next(
+            item
+            for item in session["cart"]["items"]
+            if item["marmita_type_id"] == marmita_type["id"]
+            and {meat["id"] for meat in item["meats"]}
+            == {meat["id"] for meat in meats}
+        )
         return FlowResult(
-            "Adicionado ao carrinho:\n"
-            f"{quantity}x {product['nome']}\n\n"
+            "Adicionado ao carrinho:\n\n"
+            f"{self.order_service.format_item({**added_item, 'quantity': quantity})}\n\n"
             f"{self._after_add_options()}"
         )
 
@@ -189,9 +209,9 @@ class SessionService:
         self, session: dict[str, Any], text: str
     ) -> FlowResult:
         if text == "1":
-            session["current_state"] = AWAITING_CATEGORY
+            session["current_state"] = AWAITING_MARMITA
             self._save(session)
-            return FlowResult(self.menu_service.format_categories_menu())
+            return FlowResult(self.menu_service.format_daily_menu())
         if text == "2":
             return FlowResult(
                 f"{self.order_service.format_cart(session['cart'])}\n\n"
@@ -380,11 +400,3 @@ def normalize_text(value: str) -> str:
     normalized = unicodedata.normalize("NFKD", value.casefold())
     without_accents = "".join(char for char in normalized if not unicodedata.combining(char))
     return " ".join(without_accents.strip().split())
-
-
-def parse_choice(value: str, total_options: int) -> int | None:
-    try:
-        index = int(value) - 1
-    except ValueError:
-        return None
-    return index if 0 <= index < total_options else None

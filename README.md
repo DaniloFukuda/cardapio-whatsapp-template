@@ -4,8 +4,8 @@ Servidor backend para atendimento e pedidos 100% pelo WhatsApp, usando FastAPI,
 SQLite e a WhatsApp Cloud API da Meta.
 
 O projeto não possui mais cardápio público nem carrinho no navegador. O cliente
-conversa com o número do restaurante, escolhe os produtos, finaliza o pedido e
-recebe a confirmação no próprio WhatsApp.
+conversa com o número do restaurante, escolhe uma marmita, seleciona as carnes
+disponíveis no dia, finaliza o pedido e recebe a confirmação no WhatsApp.
 
 ## Funcionalidades
 
@@ -13,8 +13,9 @@ recebe a confirmação no próprio WhatsApp.
 - Verificação do webhook pelo token configurado
 - Deduplicação de mensagens pelo `wamid`
 - Sessão e carrinho persistentes por número de telefone
-- Catálogo configurável em `data/cardapio.json`
-- Fluxo de categoria, produto, quantidade e checkout
+- Marmitas e carnes do dia configuráveis em `data/cardapio.json`
+- Fluxo de tipo de marmita, seleção de carnes, quantidade e checkout
+- Validação de uma ou duas carnes conforme a marmita
 - Entrega ou retirada, endereço, pagamento e observações
 - Pedidos persistidos em SQLite antes da notificação da equipe
 - Notificação organizada para o WhatsApp da equipe
@@ -172,22 +173,51 @@ No painel do aplicativo Meta:
 Para desenvolvimento local, use um túnel HTTPS temporário e informe a URL
 pública gerada no painel da Meta.
 
-## Cardápio
+## Cardápio de marmitas do dia
 
-Edite `data/cardapio.json`. Cada categoria e produto deve possuir um `id`
-estável e único. Produtos contêm nome, descrição e preço:
+O restaurante trabalha com duas opções:
+
+- Marmita pequena, com exatamente 1 carne, por R$ 21,00.
+- Marmita com 2 carnes, com exatamente 2 carnes diferentes, por R$ 23,00.
+
+Edite `data/cardapio.json` para trocar as carnes disponíveis. Cada tipo de
+marmita e cada carne deve possuir um `id` estável e único:
 
 ```json
 {
-  "id": "marmita-media",
-  "nome": "Marmita Média",
-  "descricao": "Porção aumentada de proteína e acompanhamento",
-  "preco": 22.0
+  "tipos_marmita": [
+    {
+      "id": "marmita-pequena-1-carne",
+      "nome": "Marmita pequena",
+      "quantidade_carnes": 1,
+      "preco": 21.0
+    }
+  ],
+  "carnes_do_dia": [
+    {
+      "id": "churrasco",
+      "nome": "Churrasco",
+      "fixo": true
+    },
+    {
+      "id": "frango",
+      "nome": "Frango",
+      "fixo": false
+    }
+  ]
 }
 ```
 
-Reinicie a aplicação depois de editar o arquivo. O serviço oferece listagem de
-categorias, produtos por categoria, busca por ID e formatação dos menus.
+O churrasco é a opção fixa padrão. Se ele for removido por engano do JSON, o
+serviço o inclui novamente na inicialização. As outras carnes podem ser
+substituídas diariamente em `carnes_do_dia`.
+
+Reinicie a aplicação depois de editar o arquivo. O serviço lista tipos de
+marmita e carnes, busca ambos por número ou ID e aceita escolhas como `1 e 2`,
+`1,2`, `1 2` e `1/2`.
+
+Uma evolução futura poderá permitir atualizar o cardápio do dia por painel
+administrativo ou por um comando interno e autorizado no próprio WhatsApp.
 
 ## Notificação da equipe
 
