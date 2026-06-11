@@ -138,7 +138,7 @@
   </main>
 
   <script src="config/restaurante.js"></script>
-  <script src="data/cardapio.js"></script>
+  <script src="js/cardapio-service.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/whatsapp.js"></script>
   <script src="js/app.js"></script>
@@ -154,7 +154,8 @@
         media.className = 'checkout-item-media';
         App.renderizarMidia(media, item.imagem, item.nome);
         const info = document.createElement('div');
-        info.innerHTML = `<strong>${item.quantidade}x ${item.nome}</strong><small>${App.formatarMoeda(item.preco)} cada</small>`;
+        const carnes = item.carnes.map(carne => carne.nome).join(' e ');
+        info.innerHTML = `<strong>${item.quantidade}x ${item.nome}</strong><small>Carnes: ${carnes}</small><small>${App.formatarMoeda(item.preco)} cada</small>`;
         const valor = document.createElement('strong');
         valor.textContent = App.formatarMoeda(item.preco * item.quantidade);
         linha.append(media, info, valor);

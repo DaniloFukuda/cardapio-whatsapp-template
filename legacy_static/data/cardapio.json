@@ -1,0 +1,40 @@
+{
+  "tipos_marmita": [
+    {
+      "id": "marmita-pequena-1-carne",
+      "nome": "Marmita pequena",
+      "descricao": "Marmita com 1 opção de carne",
+      "quantidade_carnes": 1,
+      "preco": 21.0
+    },
+    {
+      "id": "marmita-2-carnes",
+      "nome": "Marmita com 2 carnes",
+      "descricao": "Marmita com 2 opções de carne",
+      "quantidade_carnes": 2,
+      "preco": 23.0
+    }
+  ],
+  "carnes_do_dia": [
+    {
+      "id": "churrasco",
+      "nome": "Churrasco",
+      "fixo": true
+    },
+    {
+      "id": "frango",
+      "nome": "Frango",
+      "fixo": false
+    },
+    {
+      "id": "carne-de-panela",
+      "nome": "Carne de panela",
+      "fixo": false
+    },
+    {
+      "id": "linguica",
+      "nome": "Linguiça",
+      "fixo": false
+    }
+  ]
+}

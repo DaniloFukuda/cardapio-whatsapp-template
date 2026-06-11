@@ -1,116 +1,266 @@
 # Cardápio WhatsApp Template
 
-Template genérico de cardápio digital com visual mobile de app de delivery. O cliente escolhe os produtos, monta o pedido e envia uma mensagem pronta para o WhatsApp do restaurante.
+Servidor backend para atendimento e pedidos 100% pelo WhatsApp, usando FastAPI,
+SQLite e a WhatsApp Cloud API da Meta.
 
-## Recursos
+O projeto não possui mais cardápio público nem carrinho no navegador. O cliente
+conversa com o número do restaurante, escolhe os produtos, finaliza o pedido e
+recebe a confirmação no próprio WhatsApp.
 
-- HTML, CSS e JavaScript puro
-- Sem backend e sem bibliotecas externas
-- Interface mobile-first inspirada em aplicativos de delivery
-- Cabeçalho com logo, status, horário e contato
-- Banner personalizável
-- Categorias em navegação horizontal sticky
-- Produtos com imagem ou placeholder, descrição, preço e botão de adição
-- Seção configurável de produtos mais pedidos
-- Carrinho persistido em `localStorage`
-- Barra inferior do carrinho com quantidade e total
-- Checkout com entrega/retirada, pagamento e observações
-- Geração do link `wa.me` com o pedido formatado
+## Funcionalidades
 
-## Executar localmente
-
-Na pasta do projeto:
-
-```bash
-python -m http.server 8000
-```
-
-Acesse `http://localhost:8000`.
-
-## Personalizar o restaurante
-
-Edite [`config/restaurante.js`](config/restaurante.js):
-
-```javascript
-const Restaurante = {
-  nome: 'Seu Restaurante',
-  slogan: 'Seu slogan',
-  whatsapp: '5511999999999',
-  instagram: '@seu.restaurante',
-  endereco: 'Rua Exemplo, 123',
-  horario: 'Seg-Dom: 11h às 22h',
-  statusAberto: 'Aberto agora',
-  tempoEntrega: '35-50 min',
-  pedidoMinimo: 15.00,
-
-  taxaEntregaPadrao: 5.00,
-  aceitaEntrega: true,
-  aceitaRetirada: true,
-
-  logo: '🍲',
-  bannerImagem: '',
-  bannerTitulo: 'Comida de verdade, feita para o seu dia',
-  bannerTexto: 'Escolha seus favoritos e envie o pedido pelo WhatsApp.',
-  produtosDestaque: ['produto-1', 'produto-2'],
-
-  cores: {
-    principal: '#E74C3C',
-    secundaria: '#F39C12',
-    fundo: '#FFF8F3',
-    texto: '#2C3E50'
-  }
-};
-```
-
-`logo`, `bannerImagem` e a propriedade `imagem` dos produtos aceitam URL, caminho local como `assets/foto.jpg` ou emoji. Se uma imagem não carregar, o template exibe um placeholder.
-
-## Personalizar o cardápio
-
-Edite [`data/cardapio.js`](data/cardapio.js):
-
-```javascript
-{
-  id: 'produto-1',
-  nome: 'Nome do produto',
-  descricao: 'Descrição curta do produto',
-  preco: 25.00,
-  imagem: 'assets/produto.jpg'
-}
-```
-
-Cada produto deve ter um `id` único. Use esses IDs em `produtosDestaque` para escolher os itens da seção “Mais pedidos”. Quando a lista não é configurada, o template usa os primeiros produtos do cardápio.
-
-## Fluxo do pedido
-
-1. `index.html`: apresentação e informações do restaurante.
-2. `cardapio.html`: categorias, produtos, destaques e carrinho.
-3. `pedido.html`: conferência, modalidade, pagamento e observações.
-4. WhatsApp: abertura do `wa.me` com a mensagem formatada.
-
-O carrinho fica salvo no navegador com `localStorage` e é limpo depois do envio do pedido.
+- Webhook compatível com payloads da WhatsApp Cloud API
+- Verificação do webhook pelo token configurado
+- Deduplicação de mensagens pelo `wamid`
+- Sessão e carrinho persistentes por número de telefone
+- Catálogo configurável em `data/cardapio.json`
+- Fluxo de categoria, produto, quantidade e checkout
+- Entrega ou retirada, endereço, pagamento e observações
+- Pedidos persistidos em SQLite antes da notificação da equipe
+- Notificação organizada para o WhatsApp da equipe
+- Endpoints JSON para consultar os pedidos
+- Docker Compose e script simples de deploy para VPS
 
 ## Estrutura
 
 ```text
-cardapio-whatsapp-template/
-├── index.html
-├── cardapio.html
-├── pedido.html
+.
+├── web_app.py
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+├── .env.example
 ├── config/
-│   └── restaurante.js
+│   └── settings.py
+├── core/
+│   └── database.py
 ├── data/
-│   └── cardapio.js
-├── css/
-│   └── style.css
-├── js/
-│   ├── app.js
-│   ├── cart.js
-│   └── whatsapp.js
-└── assets/
+│   └── cardapio.json
+├── services/
+│   ├── whatsapp_client.py
+│   ├── menu_service.py
+│   ├── session_service.py
+│   └── order_service.py
+├── scripts/
+│   ├── init_db.py
+│   ├── test_whatsapp_flow.py
+│   └── deploy_vps.sh
+├── tests/
+└── legacy_static/
 ```
 
-## Publicação
+`legacy_static/` contém a versão anterior do site. Ela está arquivada apenas
+como referência e não é servida pela aplicação FastAPI.
 
-Por ser um projeto estático, pode ser publicado no GitHub Pages, Netlify, Vercel ou qualquer hospedagem de arquivos HTML.
+## Requisitos
 
-O WhatsApp deve estar no formato internacional, somente com números. Exemplo: `5511987654321`.
+- Python 3.11 ou mais recente
+- Conta Meta Developer com WhatsApp Cloud API configurada
+- Número habilitado na Cloud API
+- Uma URL HTTPS pública para receber o webhook
+
+## Configuração local
+
+Crie e ative um ambiente virtual:
+
+```bash
+python -m venv .venv
+```
+
+Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Instale as dependências e crie a configuração local:
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+No Windows, o equivalente é:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Edite `.env` com os dados da aplicação Meta. Depois inicialize o banco:
+
+```bash
+python scripts/init_db.py
+```
+
+Suba o servidor:
+
+```bash
+uvicorn web_app:app --reload --host 127.0.0.1 --port 8000
+```
+
+Teste a saúde em `http://127.0.0.1:8000/health`.
+
+## Variáveis de ambiente
+
+As variáveis disponíveis estão documentadas em `.env.example`:
+
+```dotenv
+APP_NAME=Cardapio WhatsApp Template
+ENVIRONMENT=development
+DATABASE_URL=sqlite:///./data/app.db
+
+WHATSAPP_VERIFY_TOKEN=troque_este_token
+WHATSAPP_ACCESS_TOKEN=coloque_o_token_da_meta
+WHATSAPP_PHONE_NUMBER_ID=coloque_o_phone_number_id
+WHATSAPP_GRAPH_API_VERSION=v23.0
+
+RESTAURANT_NAME=Sabor Brasileiro
+RESTAURANT_WHATSAPP_NUMBER=5511999999999
+RESTAURANT_STAFF_WHATSAPP_NUMBER=5511999999999
+DELIVERY_FEE=5.00
+
+PUBLIC_BASE_URL=https://cardapio.seudominio.com.br
+```
+
+Nunca versione `.env`, tokens reais, bancos SQLite ou logs com dados de
+clientes. Esses arquivos já estão cobertos pelo `.gitignore`.
+
+## Endpoints
+
+### `GET /health`
+
+Retorna o estado da aplicação, ambiente e conexão com o SQLite.
+
+### `GET /webhook/whatsapp`
+
+Endpoint de verificação da Meta. Lê `hub.mode`, `hub.verify_token` e
+`hub.challenge`. Retorna o challenge em texto puro quando o token confere.
+
+### `POST /webhook/whatsapp`
+
+Recebe eventos da Meta, ignora mensagens duplicadas, persiste mensagens de
+entrada e processa o atendimento. Eventos sem mensagem são aceitos com HTTP
+200. Tipos que não sejam texto recebem uma orientação ao cliente.
+
+### `GET /pedidos`
+
+Lista os pedidos mais recentes em JSON. Aceita `limit` entre 1 e 200.
+
+### `GET /pedidos/{pedido_id}`
+
+Retorna os detalhes de um pedido ou HTTP 404.
+
+Os endpoints `/pedidos` são administrativos e deliberadamente simples nesta
+primeira versão. Proteja-os no proxy reverso ou adicione autenticação antes de
+expor o serviço publicamente.
+
+## Configurar o webhook na Meta
+
+No painel do aplicativo Meta:
+
+1. Configure a URL como `https://SEU_DOMINIO/webhook/whatsapp`.
+2. Use como verify token o valor de `WHATSAPP_VERIFY_TOKEN`.
+3. Assine o campo `messages`.
+4. Confirme que o domínio possui HTTPS válido e encaminha para a aplicação.
+
+Para desenvolvimento local, use um túnel HTTPS temporário e informe a URL
+pública gerada no painel da Meta.
+
+## Cardápio
+
+Edite `data/cardapio.json`. Cada categoria e produto deve possuir um `id`
+estável e único. Produtos contêm nome, descrição e preço:
+
+```json
+{
+  "id": "marmita-media",
+  "nome": "Marmita Média",
+  "descricao": "Porção aumentada de proteína e acompanhamento",
+  "preco": 22.0
+}
+```
+
+Reinicie a aplicação depois de editar o arquivo. O serviço oferece listagem de
+categorias, produtos por categoria, busca por ID e formatação dos menus.
+
+## Notificação da equipe
+
+Após a confirmação, o pedido é salvo e o servidor tenta enviar o resumo para
+`RESTAURANT_STAFF_WHATSAPP_NUMBER`.
+
+A Cloud API não funciona como WhatsApp Web e não envia mensagens para grupos.
+Além disso, uma mensagem ativa para a equipe pode ser recusada fora da janela
+de atendimento. Em produção, pode ser necessário criar e aprovar um template
+da Meta para essa notificação.
+
+Se a Meta recusar o envio:
+
+- o pedido continua salvo;
+- `staff_notification_status` fica como `failed`;
+- o detalhe é armazenado em `staff_notification_error`.
+
+## Testes
+
+Inicialização e simulação completa sem chamar a API real:
+
+```bash
+python scripts/init_db.py
+python scripts/test_whatsapp_flow.py
+```
+
+Testes unitários:
+
+```bash
+pytest
+```
+
+Validação de sintaxe:
+
+```bash
+python -m compileall .
+```
+
+## Docker
+
+Crie o `.env` e execute:
+
+```bash
+docker compose up -d --build
+```
+
+O serviço fica disponível na porta `8000`. O banco é persistido no volume
+Docker `app_data`, em `/app/storage/app.db`.
+
+Consulte os logs sem expor tokens:
+
+```bash
+docker compose logs -f app
+```
+
+## Deploy em VPS
+
+Fluxo inicial recomendado:
+
+1. Instale Git, Docker Engine e Docker Compose.
+2. Clone o repositório em `/opt/cardapio-whatsapp-template`.
+3. Copie `.env.example` para `.env` e configure os valores reais.
+4. Execute `docker compose up -d --build`.
+5. Configure Nginx ou Caddy como proxy reverso com HTTPS.
+6. Cadastre a URL pública do webhook na Meta.
+
+Para atualizações:
+
+```bash
+chmod +x scripts/deploy_vps.sh
+PROJECT_DIR=/opt/cardapio-whatsapp-template scripts/deploy_vps.sh
+```
+
+O script usa `git pull --ff-only`, reconstrói os containers e preserva o volume
+do SQLite. Faça backup periódico do volume e migre para um banco gerenciado
+quando o volume de pedidos justificar.

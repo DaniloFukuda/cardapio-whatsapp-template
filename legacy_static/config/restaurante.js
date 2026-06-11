@@ -17,7 +17,7 @@ const Restaurante = {
   horario: 'Seg-Dom: 11h às 22h',
   statusAberto: 'Aberto agora',
   tempoEntrega: '35-50 min',
-  pedidoMinimo: 15.00,
+  pedidoMinimo: 21.00,
   
   // Configurações de entrega
   taxaEntregaPadrao: 5.00,
@@ -27,9 +27,8 @@ const Restaurante = {
   // Visuais
   logo: '🍲', // Pode ser URL ou emoji
   bannerImagem: '', // URL de imagem de destaque para a home / cardápio
-  bannerTitulo: 'Comida de verdade, feita para o seu dia',
-  bannerTexto: 'Escolha seus favoritos e envie o pedido pronto pelo WhatsApp.',
-  produtosDestaque: ['feijoada', 'frango-grelhado', 'marmita-media'],
+  bannerTitulo: 'Marmitas do dia, do seu jeito',
+  bannerTexto: 'Escolha sua marmita e as carnes disponíveis hoje.',
   cores: {
     principal: '#E74C3C',    // Vermelho quente
     secundaria: '#F39C12',   // Laranja

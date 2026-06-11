@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - ${ENV_FILE:-.env}
+    environment:
+      DATABASE_URL: sqlite:////app/storage/app.db
+    ports:
+      - "8000:8000"
+    volumes:
+      - app_data:/app/storage
+
+volumes:
+  app_data:

@@ -1,0 +1,116 @@
+{
+  "categorias": [
+    {
+      "id": "marmitas",
+      "nome": "Marmitas",
+      "descricao": "Pratos prontos em embalagem térmica",
+      "produtos": [
+        {
+          "id": "marmita-pequena",
+          "nome": "Marmita Pequena",
+          "descricao": "Arroz, feijão, proteína e acompanhamento",
+          "preco": 15.0
+        },
+        {
+          "id": "marmita-media",
+          "nome": "Marmita Média",
+          "descricao": "Porção aumentada de proteína e acompanhamento",
+          "preco": 22.0
+        },
+        {
+          "id": "marmita-grande",
+          "nome": "Marmita Grande",
+          "descricao": "Grande quantidade de proteína, ideal para 2 pessoas",
+          "preco": 32.0
+        }
+      ]
+    },
+    {
+      "id": "pratos-feitos",
+      "nome": "Pratos Feitos",
+      "descricao": "Nossos pratos mais populares",
+      "produtos": [
+        {
+          "id": "prato-feito",
+          "nome": "Prato Feito",
+          "descricao": "Escolha a proteína: frango, carne ou peixe",
+          "preco": 18.0
+        },
+        {
+          "id": "feijoada",
+          "nome": "Feijoada Completa",
+          "descricao": "Feijão preto com carnes, arroz, couve e laranja",
+          "preco": 28.0
+        },
+        {
+          "id": "frango-grelhado",
+          "nome": "Frango Grelhado",
+          "descricao": "Peito de frango grelhado com queijo derretido",
+          "preco": 24.0
+        },
+        {
+          "id": "bife-acebolado",
+          "nome": "Bife à Acebolada",
+          "descricao": "Bife suculento com molho de cebola caramelizada",
+          "preco": 26.0
+        }
+      ]
+    },
+    {
+      "id": "bebidas",
+      "nome": "Bebidas",
+      "descricao": "Refrigerantes, sucos e água",
+      "produtos": [
+        {
+          "id": "refrigerante-lata",
+          "nome": "Refrigerante Lata",
+          "descricao": "Coca, Guaraná ou Fanta (350ml)",
+          "preco": 3.5
+        },
+        {
+          "id": "suco-natural",
+          "nome": "Suco Natural",
+          "descricao": "Laranja ou Melancia (300ml)",
+          "preco": 5.0
+        },
+        {
+          "id": "agua",
+          "nome": "Água",
+          "descricao": "Água mineral (500ml)",
+          "preco": 2.0
+        }
+      ]
+    },
+    {
+      "id": "adicionais",
+      "nome": "Adicionais",
+      "descricao": "Complementos para seu prato",
+      "produtos": [
+        {
+          "id": "ovo-extra",
+          "nome": "Ovo Extra",
+          "descricao": "Ovo frito ou cozido",
+          "preco": 3.0
+        },
+        {
+          "id": "farofa",
+          "nome": "Farofa",
+          "descricao": "Porção de farofa caseira",
+          "preco": 2.5
+        },
+        {
+          "id": "salada-extra",
+          "nome": "Salada Extra",
+          "descricao": "Tomate, alface e cebola",
+          "preco": 4.0
+        },
+        {
+          "id": "feijao-extra",
+          "nome": "Feijão Extra",
+          "descricao": "Porção extra de feijão",
+          "preco": 3.0
+        }
+      ]
+    }
+  ]
+}

@@ -40,22 +40,16 @@
     </div>
   </section>
 
-  <nav class="category-nav" id="navegacao-categorias" aria-label="Categorias do cardápio">
-    <div class="container">
-      <ul id="lista-categorias"></ul>
-    </div>
-  </nav>
-
   <main class="container menu-content">
     <section class="featured-section" id="secao-destaque">
       <div class="section-heading">
         <div>
-          <span class="section-kicker">Favoritos da casa</span>
-          <h2>Mais pedidos</h2>
+          <span class="section-kicker">Cardápio de hoje</span>
+          <h2>Carnes disponíveis</h2>
         </div>
-        <span class="featured-badge">Popular</span>
+        <span class="featured-badge">Atualizado hoje</span>
       </div>
-      <div id="destaque-produtos" class="featured-scroller"></div>
+      <div id="lista-carnes-dia" class="daily-meat-list"></div>
     </section>
 
     <div id="conteudo-cardapio"></div>
@@ -92,29 +86,51 @@
     </button>
   </div>
 
+  <div class="modal-backdrop" id="modal-marmita" hidden>
+    <section class="marmita-modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <button type="button" class="modal-close" onclick="fecharConfiguracao()" aria-label="Fechar">×</button>
+      <span class="section-kicker">Monte sua marmita</span>
+      <h2 id="modal-titulo">Escolha as carnes</h2>
+      <p id="modal-descricao"></p>
+      <form id="form-configuracao-marmita">
+        <fieldset class="meat-options">
+          <legend id="legenda-carnes">Carnes disponíveis hoje</legend>
+          <div id="opcoes-carnes"></div>
+        </fieldset>
+        <div class="form-group quantity-field">
+          <label for="quantidade-marmitas">Quantidade</label>
+          <input type="number" id="quantidade-marmitas" min="1" step="1" value="1" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Adicionar ao pedido</button>
+      </form>
+    </section>
+  </div>
+
   <script src="config/restaurante.js"></script>
-  <script src="data/cardapio.js"></script>
+  <script src="js/cardapio-service.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/whatsapp.js"></script>
   <script src="js/app.js"></script>
   <script>
-    function criarCardProduto(produto, categoria, destaque = false) {
+    let tipoMarmitaSelecionado = null;
+
+    function criarCardMarmita(tipo) {
       const card = document.createElement('article');
-      card.className = destaque ? 'product-card featured-card' : 'product-card';
+      card.className = 'product-card';
 
       const media = document.createElement('div');
-      media.className = 'product-media';
-      App.renderizarMidia(media, produto.imagem, produto.nome);
+      media.className = 'product-media midia-placeholder';
+      media.textContent = '🍱';
 
       const content = document.createElement('div');
       content.className = 'product-content';
       content.innerHTML = `
-        <small>${categoria.nome}</small>
-        <h3>${produto.nome}</h3>
-        <p>${produto.descricao}</p>
+        <small>Marmita do dia</small>
+        <h3>${tipo.nome}</h3>
+        <p>${tipo.descricao}</p>
         <div class="product-footer">
-          <strong>${App.formatarMoeda(produto.preco)}</strong>
-          <button type="button" class="add-button" aria-label="Adicionar ${produto.nome}" onclick="adicionarAoCarrinho('${produto.id}')">+</button>
+          <strong>${App.formatarMoeda(tipo.preco)}</strong>
+          <button type="button" class="add-button" aria-label="Escolher ${tipo.nome}" onclick="abrirConfiguracao('${tipo.id}')">+</button>
         </div>
       `;
 
@@ -124,67 +140,102 @@
 
     function renderizarCardapio() {
       const container = document.getElementById('conteudo-cardapio');
-      const navegacao = document.getElementById('lista-categorias');
       container.replaceChildren();
-      navegacao.replaceChildren();
+      const secao = document.createElement('section');
+      secao.className = 'menu-category';
+      secao.innerHTML = `
+        <div class="category-heading">
+          <h2>Marmitas</h2>
+          <p>Escolha o tamanho e depois selecione as carnes.</p>
+        </div>
+      `;
 
-      Cardapio.categorias.forEach((categoria, index) => {
-        const itemNav = document.createElement('li');
-        const linkNav = document.createElement('a');
-        linkNav.href = `#categoria-${categoria.id}`;
-        linkNav.textContent = categoria.nome;
-        if (index === 0) linkNav.classList.add('active');
-        linkNav.addEventListener('click', event => {
-          event.preventDefault();
-          document.querySelectorAll('#lista-categorias a').forEach(link => link.classList.remove('active'));
-          linkNav.classList.add('active');
-          document.getElementById(`categoria-${categoria.id}`).scrollIntoView({ behavior: 'smooth' });
-        });
-        itemNav.appendChild(linkNav);
-        navegacao.appendChild(itemNav);
+      const lista = document.createElement('div');
+      lista.className = 'product-list';
+      cardapioService.listarTiposMarmita().forEach(tipo => lista.appendChild(criarCardMarmita(tipo)));
+      secao.appendChild(lista);
+      container.appendChild(secao);
+    }
 
-        const secao = document.createElement('section');
-        secao.className = 'menu-category';
-        secao.id = `categoria-${categoria.id}`;
-        secao.innerHTML = `
-          <div class="category-heading">
-            <h2>${categoria.nome}</h2>
-            <p>${categoria.descricao}</p>
-          </div>
-        `;
-
-        const lista = document.createElement('div');
-        lista.className = 'product-list';
-        categoria.produtos.forEach(produto => lista.appendChild(criarCardProduto(produto, categoria)));
-        secao.appendChild(lista);
-        container.appendChild(secao);
+    function renderizarCarnesDoDia() {
+      const container = document.getElementById('lista-carnes-dia');
+      container.replaceChildren();
+      cardapioService.listarCarnesDoDia().forEach((carne, index) => {
+        const item = document.createElement('div');
+        item.className = 'daily-meat-item';
+        item.innerHTML = `<span>${index + 1}</span><strong>${carne.nome}</strong>${carne.fixo ? '<small>Opção fixa</small>' : ''}`;
+        container.appendChild(item);
       });
     }
 
-    function renderizarDestaques() {
-      const container = document.getElementById('destaque-produtos');
-      const ids = Restaurante.produtosDestaque || [];
-      let produtos = ids.map(id => Cardapio.obterProduto(id)).filter(Boolean);
+    function abrirConfiguracao(tipoId) {
+      tipoMarmitaSelecionado = cardapioService.obterTipoMarmita(tipoId);
+      if (!tipoMarmitaSelecionado) return;
 
-      if (!produtos.length) {
-        produtos = Cardapio.categorias.flatMap(categoria =>
-          categoria.produtos.map(produto => ({ ...produto, categoria: categoria.nome }))
-        ).slice(0, 3);
+      document.getElementById('modal-titulo').textContent = tipoMarmitaSelecionado.nome;
+      document.getElementById('modal-descricao').textContent =
+        `Escolha exatamente ${tipoMarmitaSelecionado.quantidade_carnes} ${tipoMarmitaSelecionado.quantidade_carnes === 1 ? 'carne' : 'carnes'}.`;
+
+      const opcoes = document.getElementById('opcoes-carnes');
+      opcoes.replaceChildren();
+      cardapioService.listarCarnesDoDia().forEach((carne, index) => {
+        const label = document.createElement('label');
+        label.className = 'meat-option';
+        label.innerHTML = `
+          <input type="checkbox" name="carne" value="${carne.id}">
+          <span class="meat-number">${index + 1}</span>
+          <span><strong>${carne.nome}</strong>${carne.fixo ? '<small>Opção fixa do dia</small>' : ''}</span>
+          <span class="check-indicator">✓</span>
+        `;
+        opcoes.appendChild(label);
+      });
+      opcoes.querySelectorAll('input[name="carne"]').forEach(input => {
+        input.addEventListener('change', () => {
+          const selecionadas = opcoes.querySelectorAll('input[name="carne"]:checked');
+          if (selecionadas.length > tipoMarmitaSelecionado.quantidade_carnes) {
+            input.checked = false;
+            App.mostrarMensagem(
+              `Essa marmita permite ${tipoMarmitaSelecionado.quantidade_carnes} ${tipoMarmitaSelecionado.quantidade_carnes === 1 ? 'carne' : 'carnes'}.`,
+              'erro'
+            );
+          }
+        });
+      });
+
+      document.getElementById('quantidade-marmitas').value = 1;
+      document.getElementById('modal-marmita').hidden = false;
+      document.body.classList.add('modal-open');
+    }
+
+    function fecharConfiguracao() {
+      document.getElementById('modal-marmita').hidden = true;
+      document.body.classList.remove('modal-open');
+      tipoMarmitaSelecionado = null;
+    }
+
+    function adicionarMarmitaConfigurada(event) {
+      event.preventDefault();
+      const carnesIds = [...document.querySelectorAll('input[name="carne"]:checked')].map(input => input.value);
+      const validacao = cardapioService.validarQuantidadeCarnes(tipoMarmitaSelecionado?.id, carnesIds);
+
+      if (!validacao.valido) {
+        App.mostrarMensagem(validacao.erro, 'erro');
+        return;
       }
 
-      container.replaceChildren();
-      produtos.forEach(produto => {
-        container.appendChild(criarCardProduto(produto, { nome: produto.categoria }, true));
-      });
-      document.getElementById('secao-destaque').hidden = produtos.length === 0;
-    }
-
-    function adicionarAoCarrinho(produtoId) {
-      const produto = Cardapio.obterProduto(produtoId);
-      if (!produto) return;
-      carrinho.adicionar(produto);
-      atualizarCarrinho();
-      App.mostrarMensagem(`${produto.nome} adicionado`, 'sucesso');
+      try {
+        const item = cardapioService.criarItemPedido(
+          tipoMarmitaSelecionado.id,
+          carnesIds,
+          document.getElementById('quantidade-marmitas').value
+        );
+        carrinho.adicionar(item);
+        fecharConfiguracao();
+        atualizarCarrinho();
+        App.mostrarMensagem(`${item.nome} adicionada ao pedido`, 'sucesso');
+      } catch (erro) {
+        App.mostrarMensagem(erro.message, 'erro');
+      }
     }
 
     function atualizarCarrinho() {
@@ -206,7 +257,13 @@
 
         const info = document.createElement('div');
         info.className = 'cart-item-info';
-        info.innerHTML = `<h3>${item.nome}</h3><strong>${App.formatarMoeda(item.preco * item.quantidade)}</strong>`;
+        const carnes = item.carnes.map(carne => carne.nome).join(' e ');
+        info.innerHTML = `
+          <h3>${item.quantidade}x ${item.nome}</h3>
+          <small>Carnes: ${carnes}</small>
+          <small>Valor unitário: ${App.formatarMoeda(item.preco)}</small>
+          <strong>Total: ${App.formatarMoeda(item.preco * item.quantidade)}</strong>
+        `;
 
         const controle = document.createElement('div');
         controle.className = 'quantity-control';
@@ -255,7 +312,7 @@
       document.getElementById('secao-carrinho').scrollIntoView({ behavior: 'smooth' });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       document.title = `Cardápio - ${Restaurante.nome}`;
       document.getElementById('menu-banner-titulo').textContent = Restaurante.bannerTitulo || Restaurante.slogan;
       document.getElementById('menu-banner-texto').textContent = Restaurante.bannerTexto || Restaurante.slogan;
@@ -269,9 +326,20 @@
         hero.classList.add('has-image');
       }
 
-      renderizarDestaques();
-      renderizarCardapio();
-      atualizarCarrinho();
+      document.getElementById('form-configuracao-marmita').addEventListener('submit', adicionarMarmitaConfigurada);
+      document.getElementById('modal-marmita').addEventListener('click', event => {
+        if (event.target.id === 'modal-marmita') fecharConfiguracao();
+      });
+
+      try {
+        await cardapioService.carregar();
+        renderizarCarnesDoDia();
+        renderizarCardapio();
+        atualizarCarrinho();
+      } catch (erro) {
+        document.getElementById('conteudo-cardapio').innerHTML =
+          `<section class="empty-state"><h2>Cardápio indisponível</h2><p>${erro.message}</p></section>`;
+      }
     });
   </script>
 </body>

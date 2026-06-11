@@ -5,7 +5,7 @@
 
 class Cart {
   constructor() {
-    this.storageKey = 'cardapio_cart';
+    this.storageKey = 'cardapio_cart_v2';
     this.load();
   }
 
@@ -27,7 +27,7 @@ class Cart {
   /**
    * Adiciona um produto ao carrinho
    */
-  adicionar(produto, quantidade = 1) {
+  adicionar(produto, quantidade = produto.quantidade || 1) {
     const itemExistente = this.items.find(item => item.id === produto.id);
     
     if (itemExistente) {
@@ -39,7 +39,10 @@ class Cart {
         preco: produto.preco,
         quantidade: quantidade,
         categoria: produto.categoria,
-        imagem: produto.imagem
+        imagem: produto.imagem,
+        carnes: produto.carnes || [],
+        tipoMarmitaId: produto.tipoMarmitaId,
+        quantidadeCarnes: produto.quantidadeCarnes
       });
     }
     

@@ -50,19 +50,19 @@ class WhatsAppIntegration {
     items.forEach(item => {
       const valorItem = item.preco * item.quantidade;
       subtotal += valorItem;
-      mensagem += `• ${item.quantidade}x ${item.nome} - R$ ${valorItem.toFixed(2)}\n`;
+      mensagem += `${cardapioService.formatarItemPedido(item)}\n\n`;
     });
     mensagem += `\n`;
 
     // Resumo financeiro
     mensagem += `*Resumo do Pedido:*\n`;
-    mensagem += `Subtotal: R$ ${subtotal.toFixed(2)}\n`;
+    mensagem += `Subtotal: ${cardapioService.formatarMoeda(subtotal)}\n`;
     
     if (tipoPedido === 'entrega' && taxa > 0) {
-      mensagem += `Taxa de entrega: R$ ${taxa.toFixed(2)}\n`;
+      mensagem += `Taxa de entrega: ${cardapioService.formatarMoeda(taxa)}\n`;
     }
     
-    mensagem += `*Total: R$ ${total.toFixed(2)}*\n\n`;
+    mensagem += `*Total: ${cardapioService.formatarMoeda(total)}*\n\n`;
 
     // Forma de pagamento
     mensagem += `*Pagamento:*\n`;
@@ -71,7 +71,7 @@ class WhatsAppIntegration {
     } else if (pagamento === 'dinheiro') {
       mensagem += `Dinheiro\n`;
       if (troco) {
-        mensagem += `Troco para: R$ ${troco.toFixed(2)}\n`;
+        mensagem += `Troco para: ${cardapioService.formatarMoeda(troco)}\n`;
       }
     } else if (pagamento === 'cartao') {
       mensagem += `Cartão de crédito/débito\n`;
